@@ -3,90 +3,121 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Space Dodge: Galaxy Map</title>
+  <title>Cyber Dash: Neon Runner</title>
   <link rel="manifest" href="manifest.json">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; touch-action: none; user-select: none; }
-    body { margin: 0; padding: 0; background: #030008; overflow: hidden; font-family: 'Montserrat', system-ui, sans-serif; color: #fff; text-align: center; }
+    body { margin: 0; padding: 0; background: #030008; overflow: hidden; font-family: 'Rajdhani', sans-serif; color: #fff; text-align: center; }
     #gameCanvas { display: block; width: 100vw; height: 100vh; background: #030008; }
     
     .ui-overlay {
       position: absolute; top: 15px; left: 0; width: 100%;
       display: flex; justify-content: space-around;
-      font-size: 18px; font-weight: 900; pointer-events: none; z-index: 5;
+      font-size: 20px; font-weight: 700; pointer-events: none; z-index: 5;
     }
-    .score-box { color: #00f0ff; text-shadow: 0 0 10px #00f0ff; }
-    .goal-box { color: #00ff66; text-shadow: 0 0 10px #00ff66; }
+    .hud-card {
+      background: rgba(15, 23, 42, 0.85); border: 2px solid #00f0ff;
+      padding: 6px 18px; border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+      color: #00f0ff; text-shadow: 0 0 8px #00f0ff; font-family: 'Orbitron', sans-serif;
+    }
 
-    /* PANTALLAS Y MAPA */
     .screen {
       position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(3, 0, 12, 0.95); backdrop-filter: blur(12px);
+      background: rgba(3, 0, 12, 0.92); backdrop-filter: blur(10px);
       display: flex; flex-direction: column; justify-content: center; align-items: center;
       z-index: 10; padding: 20px; box-sizing: border-box;
     }
     
-    h1 { font-size: 32px; color: #00f0ff; text-shadow: 0 0 20px #00f0ff; margin-bottom: 10px; font-weight: 900; }
-    p { font-size: 14px; color: #94a3b8; max-width: 85%; margin-bottom: 20px; }
+    h1 {
+      font-family: 'Orbitron', sans-serif; font-size: 32px; color: #00f0ff;
+      text-shadow: 0 0 15px #00f0ff, 0 0 30px #ff007f; margin-bottom: 5px; font-weight: 900;
+    }
+    p { font-size: 16px; color: #94a3b8; max-width: 85%; margin-bottom: 15px; font-weight: 600; }
 
-    /* MAPA DE NIVELES GRID */
+    /* SELECTOR DE PERSONAJES NEÓN */
+    .char-selector { display: flex; justify-content: center; gap: 12px; margin-bottom: 20px; }
+    .char-card {
+      background: #0f172a; border: 2px solid #1e293b;
+      border-radius: 14px; padding: 10px; width: 90px; cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: all 0.2s;
+    }
+    .char-card.selected {
+      border-color: #ff007f; background: #1e1b4b;
+      transform: scale(1.08); box-shadow: 0 0 20px #ff007f;
+    }
+    .char-card .avatar { font-size: 36px; }
+    .char-card span { display: block; font-size: 12px; font-weight: 700; color: #e2e8f0; margin-top: 4px; font-family: 'Orbitron', sans-serif; }
+
     .map-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
       max-width: 320px; width: 100%; margin-bottom: 20px;
     }
     .level-btn {
-      background: #0f172a; border: 2px solid #1e293b; color: #64748b;
-      border-radius: 16px; padding: 15px 0; font-size: 18px; font-weight: 900;
+      background: #0f172a; border: 2px solid #334155; color: #64748b;
+      border-radius: 12px; padding: 10px 0; font-size: 18px; font-weight: 700;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      cursor: not-allowed; transition: all 0.2s;
+      cursor: not-allowed; transition: all 0.2s; font-family: 'Orbitron', sans-serif;
     }
     .level-btn.unlocked {
-      background: linear-gradient(135deg, #0284c7, #00f0ff);
-      border-color: #00f0ff; color: #fff; cursor: pointer;
-      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+      background: #0284c7; border-color: #00f0ff; color: #fff; cursor: pointer;
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
     }
     .level-btn.completed {
-      background: linear-gradient(135deg, #059669, #00ff66);
-      border-color: #00ff66; color: #fff; cursor: pointer;
-      box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+      background: #059669; border-color: #00ff66; color: #fff; cursor: pointer;
+      box-shadow: 0 0 12px rgba(0, 255, 102, 0.4);
     }
-    .level-btn span { font-size: 10px; font-weight: normal; margin-top: 4px; opacity: 0.9; }
+    .level-btn span { font-size: 9px; margin-top: 2px; font-family: 'Rajdhani', sans-serif; }
 
     .btn {
       background: linear-gradient(45deg, #ff007f, #7928ca);
-      color: #fff; border: none; padding: 15px 35px; border-radius: 50px;
-      font-size: 18px; font-weight: 900; letter-spacing: 1px;
-      cursor: pointer; box-shadow: 0 0 20px #ff007f;
+      color: #fff; border: none; padding: 14px 40px; border-radius: 30px;
+      font-size: 18px; font-weight: 900; font-family: 'Orbitron', sans-serif;
+      cursor: pointer; box-shadow: 0 0 20px #ff007f; transition: transform 0.1s;
     }
     .btn:active { transform: scale(0.95); }
   </style>
 </head>
 <body>
 
-  <!-- HUD EN JUEGO -->
   <div class="ui-overlay" id="hud" style="display: none;">
-    <div class="score-box">PUNTOS: <span id="score">0</span></div>
-    <div class="goal-box">META: <span id="goal">0</span></div>
+    <div class="hud-card">⚡ <span id="score">0</span></div>
+    <div class="hud-card" style="color: #00ff66; border-color: #00ff66; box-shadow: 0 0 12px rgba(0,255,102,0.4);">🎯 <span id="goal">0</span></div>
   </div>
 
-  <!-- PANTALLA MAPA DE NIVELES -->
   <div id="mapScreen" class="screen">
-    <h1>🚀 MAPA CÓSMICO</h1>
-    <p>Selecciona un sector desbloqueado para iniciar la misión.</p>
+    <h1>⚡ CYBER DASH</h1>
+    <p>Selecciona tu avatar Neón:</p>
+    
+    <div class="char-selector">
+      <div class="char-card selected" id="char-cat" onclick="selectChar('cat')">
+        <div class="avatar">🐱</div>
+        <span>CYBER CAT</span>
+      </div>
+      <div class="char-card" id="char-fox" onclick="selectChar('fox')">
+        <div class="avatar">🦊</div>
+        <span>NEON FOX</span>
+      </div>
+      <div class="char-card" id="char-bunny" onclick="selectChar('bunny')">
+        <div class="avatar">🐰</div>
+        <span>MECHA BUNNY</span>
+      </div>
+    </div>
+
+    <p>Sectores de misión:</p>
     <div class="map-grid" id="mapGrid"></div>
   </div>
 
-  <!-- PANTALLA GANAR NIVEL -->
   <div id="winModal" class="screen" style="display: none;">
-    <h1 style="color: #00ff66; text-shadow: 0 0 20px #00ff66;">🎉 ¡NIVEL SUPERADO!</h1>
-    <p>Has completado la meta del sector con éxito.</p>
-    <button class="btn" onclick="showMap()">VOLVER AL MAPA</button>
+    <h1 style="color: #00ff66; text-shadow: 0 0 20px #00ff66;">⚡ ¡MISIÓN CUMPLIDA!</h1>
+    <p>Has asegurado el sector de energía con éxito.</p>
+    <button class="btn" onclick="showMap()">SIGUIENTE SECTOR</button>
   </div>
 
-  <!-- PANTALLA GAME OVER -->
   <div id="gameOverModal" class="screen" style="display: none;">
-    <h1 style="color: #ff0055; text-shadow: 0 0 20px #ff0055;">💥 ¡MISIÓN FALLIDA!</h1>
-    <p>Tu nave fue destruida antes de alcanzar la meta.</p>
+    <h1 style="color: #ff007f; text-shadow: 0 0 20px #ff007f;">💥 ¡SISTEMA CRÍTICO!</h1>
+    <p>Tu avatar sufrió una sobrecarga electromagnética.</p>
     <button class="btn" onclick="retryLevel()">REINTENTAR</button>
   </div>
 
@@ -103,47 +134,54 @@
     window.addEventListener('resize', resize);
     resize();
 
-    // CONFIGURACIÓN DE NIVELES (Dificultad Escalada)
     const LEVELS = [
-      { level: 1, goal: 30, speed: 3.0, spawnRate: 25 },
-      { level: 2, goal: 50, speed: 3.5, spawnRate: 22 },
-      { level: 3, goal: 80, speed: 4.0, spawnRate: 20 },
-      { level: 4, goal: 120, speed: 4.5, spawnRate: 18 },
-      { level: 5, goal: 160, speed: 5.0, spawnRate: 16 },
-      { level: 6, goal: 200, speed: 5.5, spawnRate: 14 },
-      { level: 7, goal: 250, speed: 6.0, spawnRate: 12 },
-      { level: 8, goal: 300, speed: 6.5, spawnRate: 10 },
-      { level: 9, goal: 400, speed: 7.0, spawnRate: 9 },
-      { level: 10, goal: 500, speed: 8.0, spawnRate: 8 }
+      { level: 1, goal: 20, speed: 3.0, spawnRate: 35 },
+      { level: 2, goal: 40, speed: 3.5, spawnRate: 30 },
+      { level: 3, goal: 60, speed: 4.0, spawnRate: 26 },
+      { level: 4, goal: 90, speed: 4.5, spawnRate: 22 },
+      { level: 5, goal: 120, speed: 5.0, spawnRate: 18 },
+      { level: 6, goal: 160, speed: 5.5, spawnRate: 16 },
+      { level: 7, goal: 200, speed: 6.0, spawnRate: 14 },
+      { level: 8, goal: 250, speed: 6.5, spawnRate: 12 },
+      { level: 9, goal: 300, speed: 7.0, spawnRate: 10 },
+      { level: 10, goal: 400, speed: 8.0, spawnRate: 8 }
     ];
 
     let currentLevelIdx = 0;
-    let unlockedLevel = parseInt(localStorage.getItem('space_unlocked_lvl')) || 1;
+    let unlockedLevel = parseInt(localStorage.getItem('cyber_dash_lvl')) || 1;
+    let selectedCharacter = localStorage.getItem('cyber_dash_char') || 'cat';
     let isPlaying = false;
     let score = 0;
 
-    // Fondo Parallax Estelar
-    const starsBg = Array.from({length: 70}, () => ({
+    const starsBg = Array.from({length: 60}, () => ({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
       size: Math.random() * 2 + 0.8,
-      speed: Math.random() * 3 + 1,
+      speed: Math.random() * 4 + 1,
       color: Math.random() > 0.5 ? '#00f0ff' : '#ff007f'
     }));
 
     const player = {
       x: canvas.width / 2,
       y: canvas.height - 120,
-      size: 22,
-      targetX: canvas.width / 2,
-      particles: []
+      size: 28,
+      targetX: canvas.width / 2
     };
 
     let enemies = [];
-    let gems = [];
+    let energyOrbs = [];
+    let particles = [];
     let spawnTimer = 0;
 
+    function selectChar(type) {
+      selectedCharacter = type;
+      localStorage.setItem('cyber_dash_char', type);
+      document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
+      document.getElementById(`char-${type}`).classList.add('selected');
+    }
+
     function renderMap() {
+      selectChar(selectedCharacter);
       const grid = document.getElementById('mapGrid');
       grid.innerHTML = '';
 
@@ -154,11 +192,11 @@
 
         if (lvlNum < unlockedLevel) {
           btn.classList.add('completed');
-          btn.innerHTML = `NIVEL ${lvlNum} <span>✔ COMPLETADO</span>`;
+          btn.innerHTML = `SECTOR ${lvlNum} <span>✔ COMPLETADO</span>`;
           btn.onclick = () => startLevel(idx);
         } else if (lvlNum === unlockedLevel) {
           btn.classList.add('unlocked');
-          btn.innerHTML = `NIVEL ${lvlNum} <span>META: ${lvlObj.goal}</span>`;
+          btn.innerHTML = `SECTOR ${lvlNum} <span>META: ${lvlObj.goal}</span>`;
           btn.onclick = () => startLevel(idx);
         } else {
           btn.innerHTML = `🔒 <span>BLOQUEADO</span>`;
@@ -181,8 +219,8 @@
       currentLevelIdx = idx;
       score = 0;
       enemies = [];
-      gems = [];
-      player.particles = [];
+      energyOrbs = [];
+      particles = [];
       player.x = canvas.width / 2;
       player.targetX = canvas.width / 2;
 
@@ -198,9 +236,7 @@
       requestAnimationFrame(gameLoop);
     }
 
-    function retryLevel() {
-      startLevel(currentLevelIdx);
-    }
+    function retryLevel() { startLevel(currentLevelIdx); }
 
     function handleMove(e) {
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -209,41 +245,128 @@
     window.addEventListener('touchmove', handleMove);
     window.addEventListener('mousemove', handleMove);
 
+    function createParticles(x, y, color) {
+      for (let i = 0; i < 12; i++) {
+        particles.push({
+          x: x, y: y,
+          vx: (Math.random() - 0.5) * 8,
+          vy: (Math.random() - 0.5) * 8,
+          size: Math.random() * 5 + 2,
+          color: color,
+          life: 1
+        });
+      }
+    }
+
     function completeLevel() {
       isPlaying = false;
       if (currentLevelIdx + 2 > unlockedLevel) {
         unlockedLevel = currentLevelIdx + 2;
-        localStorage.setItem('space_unlocked_lvl', unlockedLevel);
+        localStorage.setItem('cyber_dash_lvl', unlockedLevel);
       }
       document.getElementById('winModal').style.display = 'flex';
     }
 
     function gameOver() {
       isPlaying = false;
+      createParticles(player.x, player.y, '#ff007f');
       document.getElementById('gameOverModal').style.display = 'flex';
     }
 
     function spawnEnemy() {
       const cfg = LEVELS[currentLevelIdx];
-      const size = Math.random() * 18 + 18;
+      const size = Math.random() * 6 + 22;
       enemies.push({
         x: Math.random() * (canvas.width - size * 2) + size,
         y: -size * 2,
         size: size,
-        speed: Math.random() * 2 + cfg.speed,
-        rot: 0,
-        rotSpeed: (Math.random() - 0.5) * 0.08
+        speed: Math.random() * 1.5 + cfg.speed,
+        rot: 0
       });
     }
 
-    function spawnGem() {
-      gems.push({
+    function spawnOrb() {
+      energyOrbs.push({
         x: Math.random() * (canvas.width - 40) + 20,
         y: -20,
-        size: 14,
-        speed: 3.0,
+        size: 16,
+        speed: 3.2,
         pulse: 0
       });
+    }
+
+    // DIBUJAR AVATAR CYBER-POP
+    function drawPlayer(x, y, size) {
+      ctx.save();
+      ctx.translate(x, y);
+
+      let neonColor = '#00f0ff';
+      if (selectedCharacter === 'fox') neonColor = '#facc15';
+      if (selectedCharacter === 'bunny') neonColor = '#ff007f';
+
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = neonColor;
+
+      // Base del Avatar
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.arc(0, 0, size, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = neonColor;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Visor Neón Sci-Fi
+      ctx.fillStyle = neonColor;
+      ctx.beginPath();
+      ctx.roundRect(-size * 0.6, -size * 0.25, size * 1.2, size * 0.4, 6);
+      ctx.fill();
+
+      // Detalle Brillo en Visor
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(-size * 0.2, -size * 0.1, size * 0.08, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function drawOrb(orb) {
+      ctx.save();
+      ctx.translate(orb.x, orb.y);
+      orb.pulse += 0.08;
+
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = '#00ff66';
+      ctx.fillStyle = '#00ff66';
+
+      ctx.beginPath();
+      ctx.arc(0, 0, orb.size + Math.sin(orb.pulse) * 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function drawEnemy(e) {
+      ctx.save();
+      ctx.translate(e.x, e.y);
+      e.rot += 0.05;
+      ctx.rotate(e.rot);
+
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = '#ff007f';
+
+      ctx.fillStyle = '#ff007f';
+      ctx.beginPath();
+      ctx.arc(0, 0, e.size, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.restore();
     }
 
     function gameLoop() {
@@ -254,7 +377,7 @@
       ctx.fillStyle = 'rgba(3, 0, 8, 0.35)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Estrellas Parallax
+      // Fondo Parallax Neón
       starsBg.forEach(s => {
         s.y += s.speed;
         if (s.y > canvas.height) s.y = 0;
@@ -264,110 +387,70 @@
         ctx.fill();
       });
 
-      // Nave
       player.x += (player.targetX - player.x) * 0.25;
+      drawPlayer(player.x, player.y, player.size);
 
-      ctx.save();
-      ctx.translate(player.x, player.y);
-      ctx.shadowBlur = 15;
-      ctx.shadowColor = '#00f0ff';
-
-      ctx.fillStyle = '#ff007f';
-      ctx.beginPath();
-      ctx.moveTo(0, -player.size * 1.4);
-      ctx.lineTo(-player.size * 1.4, player.size);
-      ctx.lineTo(player.size * 1.4, player.size);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.fillStyle = '#00f0ff';
-      ctx.beginPath();
-      ctx.moveTo(0, -player.size * 1.5);
-      ctx.lineTo(-player.size * 0.6, player.size * 0.8);
-      ctx.lineTo(player.size * 0.6, player.size * 0.8);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
-
-      // Generación
       spawnTimer++;
       if (spawnTimer % cfg.spawnRate === 0) spawnEnemy();
-      if (spawnTimer % 80 === 0) spawnGem();
+      if (spawnTimer % 65 === 0) spawnOrb();
 
-      // Gemas
-      for (let i = gems.length - 1; i >= 0; i--) {
-        let g = gems[i];
-        g.y += g.speed;
-        g.pulse += 0.1;
-
-        ctx.save();
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = '#00ff66';
-        ctx.fillStyle = '#00ff66';
+      // Partículas
+      for (let i = particles.length - 1; i >= 0; i--) {
+        let p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 0.05;
+        if (p.life <= 0) { particles.splice(i, 1); continue; }
+        ctx.fillStyle = p.color;
         ctx.beginPath();
-        ctx.arc(g.x, g.y, g.size + Math.sin(g.pulse) * 2, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
         ctx.fill();
-        ctx.restore();
+      }
 
-        let dist = Math.hypot(player.x - g.x, player.y - g.y);
-        if (dist < player.size + g.size) {
+      // Orbes
+      for (let i = energyOrbs.length - 1; i >= 0; i--) {
+        let orb = energyOrbs[i];
+        orb.y += orb.speed;
+
+        drawOrb(orb);
+
+        let dist = Math.hypot(player.x - orb.x, player.y - orb.y);
+        if (dist < player.size + orb.size) {
           score += 15;
           document.getElementById('score').innerText = score;
-          gems.splice(i, 1);
+          createParticles(orb.x, orb.y, '#00ff66');
+          energyOrbs.splice(i, 1);
 
           if (score >= cfg.goal) {
             completeLevel();
             return;
           }
-        } else if (g.y > canvas.height + 30) {
-          gems.splice(i, 1);
+        } else if (orb.y > canvas.height + 40) {
+          energyOrbs.splice(i, 1);
         }
       }
 
       // Enemigos
       for (let i = enemies.length - 1; i >= 0; i--) {
-        let e = enemies[i];
-        e.y += e.speed;
-        e.rot += e.rotSpeed;
+        let b = enemies[i];
+        b.y += b.speed;
 
-        ctx.save();
-        ctx.translate(e.x, e.y);
-        ctx.rotate(e.rot);
-        ctx.shadowBlur = 12;
-        ctx.shadowColor = '#ff0055';
+        drawEnemy(b);
 
-        let grad = ctx.createRadialGradient(0, 0, 2, 0, 0, e.size);
-        grad.addColorStop(0, '#ff5500');
-        grad.addColorStop(1, '#ff0055');
-        ctx.fillStyle = grad;
-
-        ctx.beginPath();
-        ctx.arc(0, 0, e.size, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-
-        let dist = Math.hypot(player.x - e.x, player.y - e.y);
-        if (dist < player.size + e.size - 4) {
+        let dist = Math.hypot(player.x - b.x, player.y - b.y);
+        if (dist < player.size + b.size - 4) {
           gameOver();
           return;
         }
 
-        if (e.y > canvas.height + e.size * 2) {
-          score += 1;
-          document.getElementById('score').innerText = score;
+        if (b.y > canvas.height + b.size * 2) {
           enemies.splice(i, 1);
-
-          if (score >= cfg.goal) {
-            completeLevel();
-            return;
-          }
         }
       }
 
       requestAnimationFrame(gameLoop);
     }
 
-    // Inicializar Mapa
     showMap();
 
     if ('serviceWorker' in navigator) {

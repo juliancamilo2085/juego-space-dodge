@@ -3,446 +3,240 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>CYBER HEROES: SAGA NEÓN HD</title>
+  <title>Candy Blast Adventure</title>
   <link rel="manifest" href="manifest.json">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@600;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; touch-action: none; user-select: none; }
-    body { margin: 0; padding: 0; background: #030008; overflow: hidden; font-family: 'Rajdhani', sans-serif; color: #fff; text-align: center; }
-    #gameCanvas { display: block; width: 100vw; height: 100vh; background: #030008; }
-    
-    /* HUD EN JUEGO */
-    .ui-overlay {
-      position: absolute; top: 15px; left: 0; width: 100%;
-      display: flex; justify-content: space-around; align-items: center;
-      font-size: 18px; font-weight: 900; pointer-events: none; z-index: 5;
-    }
-    .hud-card {
-      background: rgba(10, 15, 30, 0.9); border: 2px solid #00f0ff;
-      padding: 6px 16px; border-radius: 16px;
-      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
-      color: #00f0ff; text-shadow: 0 0 8px #00f0ff; font-family: 'Orbitron', sans-serif;
+    body {
+      margin: 0; padding: 0; background: #0066ff;
+      font-family: 'Fredoka One', cursive, sans-serif;
+      display: flex; flex-direction: column; align-items: center;
+      height: 100vh; overflow: hidden; color: #fff;
     }
 
-    /* PANTALLAS Y MENÚS */
+    /* PANTALLA DE PORTADA ESTILO BLOCK BLAST */
     .screen {
       position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(3, 0, 12, 0.95); backdrop-filter: blur(12px);
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
-      z-index: 10; padding: 20px; box-sizing: border-box;
+      background: linear-gradient(180deg, #1e88e5 0%, #0d47a1 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+      padding: 40px 20px; z-index: 20; box-sizing: border-box;
     }
-    
-    .title-banner {
-      font-family: 'Orbitron', sans-serif; font-size: 34px; color: #00f0ff;
-      text-shadow: 0 0 15px #00f0ff, 0 0 35px #ff007f; margin-bottom: 5px; font-weight: 900;
-      letter-spacing: 2px;
-    }
-    .subtitle { font-size: 15px; color: #94a3b8; max-width: 85%; margin-bottom: 15px; font-weight: 700; }
 
-    /* SELECTOR DE AVATARES HD */
-    .char-selector { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; max-width: 380px; }
-    .char-card {
-      background: #0b1120; border: 2px solid #1e293b;
-      border-radius: 16px; padding: 8px; width: 80px; cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: all 0.25s ease-in-out;
+    /* TÍTULO 3D VOLUMÉTRICO */
+    .game-logo {
+      font-size: 48px; text-align: center; line-height: 0.9;
+      margin-top: 20px; position: relative;
     }
-    .char-card.selected {
-      border-color: #ff007f; background: #1e1b4b;
-      transform: scale(1.1); box-shadow: 0 0 22px #ff007f;
+    .logo-candy {
+      color: #ff3366;
+      text-shadow: 0 6px 0 #990033, 0 10px 20px rgba(0,0,0,0.4);
+      display: block; font-size: 52px;
     }
-    .char-card img { width: 50px; height: 50px; display: block; margin: 0 auto; }
-    .char-card span { display: block; font-size: 9px; font-weight: 700; color: #e2e8f0; margin-top: 6px; font-family: 'Orbitron', sans-serif; }
+    .logo-blast {
+      color: #00e676;
+      text-shadow: 0 6px 0 #008837, 0 10px 20px rgba(0,0,0,0.4);
+      display: block; font-size: 44px; letter-spacing: 2px;
+    }
 
-    /* MAPA DE MUNDOS Y NIVELES */
-    .world-map-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
-      max-width: 340px; width: 100%; margin-bottom: 20px;
+    .badge-card {
+      background: rgba(255, 255, 255, 0.95); color: #1e3c72;
+      border-radius: 20px; padding: 15px 30px; width: 100%; max-width: 320px;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25); margin-bottom: 20px;
     }
-    .world-btn {
-      background: #0b1120; border: 2px solid #1e293b; color: #64748b;
-      border-radius: 16px; padding: 12px 6px; font-size: 14px; font-weight: 900;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      cursor: not-allowed; transition: all 0.2s; font-family: 'Orbitron', sans-serif;
-    }
-    .world-btn.unlocked {
-      background: linear-gradient(135deg, #0284c7, #00f0ff);
-      border-color: #ffffff; color: #fff; cursor: pointer;
-      box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
-    }
-    .world-btn span { font-size: 9px; font-family: 'Rajdhani', sans-serif; margin-top: 4px; font-weight: 700; }
+    .badge-info { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 14px; color: #475569; }
+    .badge-val { font-size: 28px; color: #1e293b; font-weight: 900; }
 
-    /* BOTONES */
-    .btn {
-      background: linear-gradient(45deg, #ff007f, #7928ca);
-      color: #fff; border: none; padding: 16px 45px; border-radius: 40px;
-      font-size: 18px; font-weight: 900; font-family: 'Orbitron', sans-serif;
-      cursor: pointer; box-shadow: 0 0 25px #ff007f; transition: transform 0.15s;
-      letter-spacing: 1px;
+    .menu-buttons {
+      display: flex; flex-direction: column; gap: 15px;
+      width: 100%; max-width: 320px; margin-bottom: 30px;
     }
-    .btn:active { transform: scale(0.92); }
+
+    .btn-menu {
+      width: 100%; padding: 18px; border-radius: 22px; border: none;
+      font-family: 'Fredoka One', cursive; font-size: 22px; color: #fff;
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      cursor: pointer; transition: transform 0.1s;
+      box-shadow: 0 8px 0 rgba(0,0,0,0.25); position: relative;
+    }
+    .btn-menu:active { transform: translateY(4px); box-shadow: 0 3px 0 rgba(0,0,0,0.25); }
+    .btn-adventure { background: linear-gradient(180deg, #ff9800, #f57c00); box-shadow: 0 8px 0 #e65100; }
+    .btn-classic { background: linear-gradient(180deg, #00e676, #00c853); box-shadow: 0 8px 0 #008435; }
+
+    /* HUD DEL JUEGO CANDY */
+    .game-hud {
+      width: 100%; max-width: 420px; padding: 10px 15px;
+      display: flex; justify-content: space-between; align-items: center;
+      background: linear-gradient(180deg, #26a69a, #00897b);
+      border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .hud-box {
+      background: rgba(255,255,255,0.2); padding: 6px 14px;
+      border-radius: 15px; font-size: 16px; display: flex; align-items: center; gap: 6px;
+    }
+
+    /* TABLERO CANDY MATCH-3 */
+    .board-container {
+      flex: 1; display: flex; flex-direction: column;
+      justify-content: center; align-items: center; width: 100%;
+    }
+
+    .grid-board {
+      display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+      background: rgba(255, 255, 255, 0.25); padding: 8px; border-radius: 20px;
+      backdrop-filter: blur(8px); border: 3px solid rgba(255,255,255,0.4);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .cell {
+      width: 44px; height: 44px; background: rgba(255, 255, 255, 0.15);
+      border-radius: 10px; display: flex; justify-content: center; align-items: center;
+      cursor: pointer; transition: transform 0.15s;
+    }
+    .cell.selected { transform: scale(1.15); background: rgba(255, 255, 255, 0.4); }
+    .cell svg { width: 36px; height: 36px; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); }
+
+    /* POPUP DE DIÁLOGO */
+    .speech-bubble {
+      background: #fff; color: #1e293b; padding: 12px 20px; border-radius: 18px;
+      font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15); margin-bottom: 15px; text-align: center;
+      position: relative; max-width: 85%;
+    }
   </style>
 </head>
 <body>
 
-  <!-- HUD EN JUEGO -->
-  <div class="ui-overlay" id="hud" style="display: none;">
-    <div class="hud-card">❤️ <span id="hudLives">3</span></div>
-    <div class="hud-card">💎 <span id="score">0</span></div>
-    <div class="hud-card" style="color: #00ff66; border-color: #00ff66; box-shadow: 0 0 15px rgba(0,255,102,0.4);">🎯 META: <span id="goal">0</span></div>
-  </div>
-
-  <!-- PANTALLA PRINCIPAL DE MAPA Y HÉROES -->
-  <div id="startScreen" class="screen">
-    <div class="title-banner">CYBER HEROES</div>
-    <div class="subtitle">SELECCIONA TU GUERRERO NEÓN:</div>
-    
-    <div class="char-selector">
-      <div class="char-card selected" id="char-cat" onclick="selectChar('cat')">
-        <img id="img-cat" src="" alt="Cat"/>
-        <span>CYBER CAT</span>
-      </div>
-      <div class="char-card" id="char-fox" onclick="selectChar('fox')">
-        <img id="img-fox" src="" alt="Fox"/>
-        <span>NEON FOX</span>
-      </div>
-      <div class="char-card" id="char-bunny" onclick="selectChar('bunny')">
-        <img id="img-bunny" src="" alt="Bunny"/>
-        <span>MECHA BUNNY</span>
-      </div>
-      <div class="char-card" id="char-panther" onclick="selectChar('panther')">
-        <img id="img-panther" src="" alt="Panther"/>
-        <span>SHADOW</span>
-      </div>
+  <!-- PORTADA ESTILO BLOCK BLAST -->
+  <div class="screen" id="menuScreen">
+    <div class="game-logo">
+      <span class="logo-candy">CANDY</span>
+      <span class="logo-blast">BLAST</span>
     </div>
 
-    <div class="subtitle" style="color: #00f0ff;">MAPA DE MUNDOS DESBLOQUEADOS:</div>
-    <div class="world-map-grid" id="worldMapGrid"></div>
+    <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+      <div class="badge-card">
+        <div class="badge-info">Victorias Diarias</div>
+        <div class="badge-val">🏆 ×0</div>
+      </div>
+
+      <div class="menu-buttons">
+        <button class="btn-menu btn-adventure" onclick="startGame()">
+          📍 MODO AVENTURA
+        </button>
+        <button class="btn-menu btn-classic" onclick="startGame()">
+          ♾️ MODO CLÁSICO
+        </button>
+      </div>
+    </div>
   </div>
 
-  <!-- PANTALLA NIVEL SUPERADO -->
-  <div id="winModal" class="screen" style="display: none;">
-    <h1 style="color: #00ff66; text-shadow: 0 0 25px #00ff66; font-family: 'Orbitron'; font-size: 32px;">⚡ ¡SECTOR COMPLETADO!</h1>
-    <p class="subtitle" style="color: #e2e8f0;">¡Has asegurado las gemas del sector!</p>
-    <button class="btn" style="background: linear-gradient(45deg, #10b981, #059669); box-shadow: 0 0 25px #10b981;" onclick="nextLevel()">SIGUIENTE NIVEL ➔</button>
+  <!-- HUD EN JUEGO -->
+  <div class="game-hud" id="hud" style="display: none;">
+    <div class="hud-box">⭐ <span id="scoreText">0</span></div>
+    <div class="hud-box">🎯 META: <span id="goalText">500</span></div>
+    <div class="hud-box">🔄 <span id="movesText">20</span></div>
   </div>
 
-  <!-- PANTALLA GAME OVER -->
-  <div id="gameOverModal" class="screen" style="display: none;">
-    <h1 style="color: #ff007f; text-shadow: 0 0 25px #ff007f; font-family: 'Orbitron'; font-size: 32px;">💥 ¡DESTRUIDO!</h1>
-    <p class="subtitle" style="color: #e2e8f0;">Tu avatar sufrió una colisión crítica.</p>
-    <button class="btn" onclick="retryLevel()">REINTENTAR</button>
+  <!-- TABLERO DE JUEGO CANDY -->
+  <div class="board-container" id="gameBoard" style="display: none;">
+    <div class="speech-bubble">
+      ¡Toca dos caramelos adyacentes para intercambiarlos!
+    </div>
+    <div class="grid-board" id="grid"></div>
   </div>
-
-  <canvas id="gameCanvas"></canvas>
 
   <script>
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-
-    function resize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    // DIBUJOS VECTORIALES HD (IMÁGENES SVG EN MEMORIA)
-    const SVG_DATA = {
-      cat: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M15 15 L35 38 L10 45 Z" fill="#00f0ff"/><path d="M85 15 L65 38 L90 45 Z" fill="#00f0ff"/><circle cx="50" cy="50" r="35" fill="#0b1120" stroke="#00f0ff" stroke-width="4"/><rect x="24" y="38" width="52" height="20" rx="10" fill="#00f0ff"/><circle cx="38" cy="48" r="4" fill="#ffffff"/><circle cx="62" cy="48" r="4" fill="#ffffff"/></svg>`,
-      fox: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M10 10 L40 35 L5 48 Z" fill="#facc15"/><path d="M90 10 L60 35 L95 48 Z" fill="#facc15"/><circle cx="50" cy="50" r="35" fill="#1e1b4b" stroke="#facc15" stroke-width="4"/><polygon points="18,40 82,40 70,62 30,62" fill="#facc15"/><circle cx="36" cy="50" r="4" fill="#000"/><circle cx="64" cy="50" r="4" fill="#000"/></svg>`,
-      bunny: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="24" y="4" width="14" height="38" rx="7" fill="#ff007f"/><rect x="62" y="4" width="14" height="38" rx="7" fill="#ff007f"/><circle cx="50" cy="55" r="32" fill="#0f172a" stroke="#ff007f" stroke-width="4"/><rect x="26" y="45" width="48" height="18" rx="9" fill="#ff007f"/><circle cx="38" cy="54" r="3" fill="#fff"/><circle cx="62" cy="54" r="3" fill="#fff"/></svg>`,
-      panther: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M18 22 L35 38 L12 42 Z" fill="#a855f7"/><path d="M82 22 L65 38 L88 42 Z" fill="#a855f7"/><circle cx="50" cy="50" r="35" fill="#090514" stroke="#a855f7" stroke-width="4"/><ellipse cx="50" cy="48" rx="26" ry="8" fill="#a855f7"/><circle cx="38" cy="48" r="3" fill="#ffffff"/><circle cx="62" cy="48" r="3" fill="#ffffff"/></svg>`,
-      mine: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 2 L62 35 L98 50 L62 65 L50 98 L38 65 L2 50 L38 35 Z" fill="#ff0055"/><circle cx="50" cy="50" r="22" fill="#0f172a" stroke="#ff0055" stroke-width="4"/><circle cx="50" cy="50" r="9" fill="#ff0055"/></svg>`,
-      gem: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,8 88,34 50,92 12,34" fill="#00ff66" stroke="#ffffff" stroke-width="3"/><polygon points="50,8 88,34 50,44 12,34" fill="#a7f3d0"/></svg>`
-    };
-
-    const images = {};
-    Object.keys(SVG_DATA).forEach(key => {
-      const img = new Image();
-      img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(SVG_DATA[key]);
-      images[key] = img;
-    });
-
-    // MUNDOS Y NIVELES INFINITOS
-    const WORLDS = [
-      { id: 1, name: "CIUDAD NEÓN", color: "#00f0ff" },
-      { id: 2, name: "SELVA CYBER", color: "#00ff66" },
-      { id: 3, name: "OCÉANO DE LUZ", color: "#38bdf8" },
-      { id: 4, name: "CIUDAD FLOTANTE", color: "#a855f7" },
-      { id: 5, name: "NÚCLEO MAGMA", color: "#ff0055" }
+    // ICONOS CANDY 3D VECTORIALES
+    const CANDIES = [
+      // 0: Drop Amarillo
+      `<svg viewBox="0 0 100 100"><path d="M50 10 C50 10, 85 55, 85 70 C85 85, 70 95, 50 95 C30 95, 15 85, 15 70 C15 55, 50 10, 50 10 Z" fill="#ffd54f" stroke="#f57f17" stroke-width="4"/><ellipse cx="40" cy="50" rx="8" ry="15" fill="#fff" opacity="0.6"/></svg>`,
+      // 1: Flor Púrpura
+      `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="38" fill="#e040fb" stroke="#aa00ff" stroke-width="4"/><circle cx="50" cy="50" r="18" fill="#ea80fc"/><circle cx="40" cy="40" r="6" fill="#fff" opacity="0.7"/></svg>`,
+      // 2: Cuadrado Verde
+      `<svg viewBox="0 0 100 100"><rect x="15" y="15" width="70" height="70" rx="18" fill="#00e676" stroke="#00a152" stroke-width="4"/><rect x="25" y="25" width="20" height="20" rx="5" fill="#fff" opacity="0.5"/></svg>`,
+      // 3: Óvalo Naranja
+      `<svg viewBox="0 0 100 100"><ellipse cx="50" cy="50" rx="38" ry="25" fill="#ff9100" stroke="#d50000" stroke-width="4"/><ellipse cx="40" cy="42" rx="12" ry="6" fill="#fff" opacity="0.6"/></svg>`
     ];
 
-    let unlockedWorld = parseInt(localStorage.getItem('cyber_saga_world')) || 1;
-    let unlockedLevel = parseInt(localStorage.getItem('cyber_saga_lvl')) || 1;
-    let selectedCharacter = localStorage.getItem('cyber_saga_char') || 'cat';
-
-    let currentWorld = 1;
-    let currentLevel = 1;
-    let lives = 3;
+    const ROWS = 7;
+    const COLS = 7;
+    let board = [];
+    let selectedCell = null;
     let score = 0;
-    let goal = 30;
-    let isPlaying = false;
+    let moves = 20;
 
-    const starsBg = Array.from({length: 80}, () => ({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      size: Math.random() * 2 + 1,
-      speed: Math.random() * 5 + 2
-    }));
+    function startGame() {
+      document.getElementById('menuScreen').style.display = 'none';
+      document.getElementById('hud').style.display = 'flex';
+      document.getElementById('gameBoard').style.display = 'flex';
+      initBoard();
+    }
 
-    const player = {
-      x: canvas.width / 2,
-      y: canvas.height - 120,
-      size: 32,
-      targetX: canvas.width / 2
-    };
+    function initBoard() {
+      score = 0;
+      moves = 20;
+      updateHUD();
 
-    let enemies = [];
-    let gems = [];
-    let particles = [];
-    let spawnTimer = 0;
+      board = [];
+      for (let r = 0; r < ROWS; r++) {
+        board[r] = [];
+        for (let c = 0; c < COLS; c++) {
+          board[r][c] = Math.floor(Math.random() * CANDIES.length);
+        }
+      }
+      renderBoard();
+    }
 
-    function renderUI() {
-      // Cargar imágenes en los avatares
-      ['cat', 'fox', 'bunny', 'panther'].forEach(key => {
-        const el = document.getElementById(`img-${key}`);
-        if(el) el.src = images[key].src;
-      });
-
-      selectChar(selectedCharacter);
-
-      // Renderizar Mapa de Mundos
-      const grid = document.getElementById('worldMapGrid');
+    function renderBoard() {
+      const grid = document.getElementById('grid');
       grid.innerHTML = '';
 
-      WORLDS.forEach(w => {
-        const btn = document.createElement('div');
-        btn.className = 'world-btn';
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          if (selectedCell && selectedCell.r === r && selectedCell.c === c) {
+            cell.classList.add('selected');
+          }
+          cell.innerHTML = CANDIES[board[r][c]];
+          cell.onclick = () => onCellClick(r, c);
+          grid.appendChild(cell);
+        }
+      }
+    }
 
-        if (w.id <= unlockedWorld) {
-          btn.classList.add('unlocked');
-          btn.style.borderColor = w.color;
-          btn.innerHTML = `MUNDO ${w.id} <span>${w.name}</span>`;
-          btn.onclick = () => startWorldGame(w.id);
+    function onCellClick(r, c) {
+      if (!selectedCell) {
+        selectedCell = { r, c };
+        renderBoard();
+      } else {
+        const isAdjacent = Math.abs(selectedCell.r - r) + Math.abs(selectedCell.c - c) === 1;
+        if (isAdjacent) {
+          // Intercambiar
+          let temp = board[selectedCell.r][selectedCell.c];
+          board[selectedCell.r][selectedCell.c] = board[r][c];
+          board[r][c] = temp;
+
+          moves--;
+          score += 50;
+          updateHUD();
+
+          selectedCell = null;
+          renderBoard();
         } else {
-          btn.innerHTML = `🔒 <span>BLOQUEADO</span>`;
-        }
-
-        grid.appendChild(btn);
-      });
-    }
-
-    function selectChar(type) {
-      selectedCharacter = type;
-      localStorage.setItem('cyber_saga_char', type);
-      document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
-      document.getElementById(`char-${type}`).classList.add('selected');
-    }
-
-    function startWorldGame(worldId) {
-      currentWorld = worldId;
-      currentLevel = (worldId - 1) * 5 + 1;
-      initLevel();
-    }
-
-    function nextLevel() {
-      currentLevel++;
-      if (currentLevel > unlockedLevel) {
-        unlockedLevel = currentLevel;
-        localStorage.setItem('cyber_saga_lvl', unlockedLevel);
-      }
-      let calcWorld = Math.ceil(currentLevel / 5);
-      if (calcWorld > unlockedWorld) {
-        unlockedWorld = calcWorld;
-        localStorage.setItem('cyber_saga_world', unlockedWorld);
-      }
-      initLevel();
-    }
-
-    function retryLevel() { initLevel(); }
-
-    function initLevel() {
-      score = 0;
-      lives = 3;
-      enemies = [];
-      gems = [];
-      particles = [];
-      player.x = canvas.width / 2;
-      player.targetX = canvas.width / 2;
-
-      goal = 20 + (currentLevel * 10);
-
-      document.getElementById('startScreen').style.display = 'none';
-      document.getElementById('winModal').style.display = 'none';
-      document.getElementById('gameOverModal').style.display = 'none';
-      document.getElementById('hud').style.display = 'flex';
-
-      document.getElementById('hudLives').innerText = lives;
-      document.getElementById('score').innerText = '0';
-      document.getElementById('goal').innerText = goal;
-
-      isPlaying = true;
-      requestAnimationFrame(gameLoop);
-    }
-
-    function handleMove(e) {
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      player.targetX = clientX;
-    }
-    window.addEventListener('touchmove', handleMove);
-    window.addEventListener('mousemove', handleMove);
-
-    function createParticles(x, y, color) {
-      for (let i = 0; i < 15; i++) {
-        particles.push({
-          x: x, y: y,
-          vx: (Math.random() - 0.5) * 10,
-          vy: (Math.random() - 0.5) * 10,
-          size: Math.random() * 6 + 2,
-          color: color,
-          life: 1
-        });
-      }
-    }
-
-    function spawnEnemy() {
-      const speed = 3.2 + (currentLevel * 0.3);
-      const size = 30;
-      enemies.push({
-        x: Math.random() * (canvas.width - size * 2) + size,
-        y: -size * 2,
-        size: size,
-        speed: Math.random() * 1.5 + speed,
-        rot: 0
-      });
-    }
-
-    function spawnGem() {
-      gems.push({
-        x: Math.random() * (canvas.width - 50) + 25,
-        y: -25,
-        size: 22,
-        speed: 3.5
-      });
-    }
-
-    function gameOver() {
-      isPlaying = false;
-      createParticles(player.x, player.y, '#ff0055');
-      document.getElementById('gameOverModal').style.display = 'flex';
-    }
-
-    function completeLevel() {
-      isPlaying = false;
-      document.getElementById('winModal').style.display = 'flex';
-    }
-
-    function gameLoop() {
-      if (!isPlaying) return;
-
-      const spawnRate = Math.max(10, 35 - currentLevel);
-
-      ctx.fillStyle = 'rgba(3, 0, 12, 0.35)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Fondo Parallax
-      starsBg.forEach(s => {
-        s.y += s.speed;
-        if (s.y > canvas.height) s.y = 0;
-        ctx.fillStyle = WORLDS[(currentWorld - 1) % WORLDS.length].color;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      player.x += (player.targetX - player.x) * 0.25;
-
-      // Dibujar Jugador
-      ctx.save();
-      ctx.shadowBlur = 20;
-      ctx.shadowColor = WORLDS[(currentWorld - 1) % WORLDS.length].color;
-      ctx.drawImage(images[selectedCharacter], player.x - player.size, player.y - player.size, player.size * 2, player.size * 2);
-      ctx.restore();
-
-      // Spawns
-      spawnTimer++;
-      if (spawnTimer % spawnRate === 0) spawnEnemy();
-      if (spawnTimer % 50 === 0) spawnGem();
-
-      // Partículas
-      for (let i = particles.length - 1; i >= 0; i--) {
-        let p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.life -= 0.05;
-        if (p.life <= 0) { particles.splice(i, 1); continue; }
-        ctx.fillStyle = p.color;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // Gemas
-      for (let i = gems.length - 1; i >= 0; i--) {
-        let g = gems[i];
-        g.y += g.speed;
-
-        ctx.save();
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = '#00ff66';
-        ctx.drawImage(images.gem, g.x - g.size, g.y - g.size, g.size * 2, g.size * 2);
-        ctx.restore();
-
-        let dist = Math.hypot(player.x - g.x, player.y - g.y);
-        if (dist < player.size + g.size) {
-          score += 10;
-          document.getElementById('score').innerText = score;
-          createParticles(g.x, g.y, '#00ff66');
-          gems.splice(i, 1);
-
-          if (score >= goal) {
-            completeLevel();
-            return;
-          }
-        } else if (g.y > canvas.height + 40) {
-          gems.splice(i, 1);
+          selectedCell = { r, c };
+          renderBoard();
         }
       }
-
-      // Minas
-      for (let i = enemies.length - 1; i >= 0; i--) {
-        let e = enemies[i];
-        e.y += e.speed;
-        e.rot += 0.05;
-
-        ctx.save();
-        ctx.translate(e.x, e.y);
-        ctx.rotate(e.rot);
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = '#ff0055';
-        ctx.drawImage(images.mine, -e.size, -e.size, e.size * 2, e.size * 2);
-        ctx.restore();
-
-        let dist = Math.hypot(player.x - e.x, player.y - e.y);
-        if (dist < player.size + e.size - 6) {
-          lives--;
-          document.getElementById('hudLives').innerText = lives;
-          createParticles(e.x, e.y, '#ff0055');
-          enemies.splice(i, 1);
-
-          if (lives <= 0) {
-            gameOver();
-            return;
-          }
-        } else if (e.y > canvas.height + e.size * 2) {
-          enemies.splice(i, 1);
-        }
-      }
-
-      requestAnimationFrame(gameLoop);
     }
 
-    setTimeout(renderUI, 100);
+    function updateHUD() {
+      document.getElementById('scoreText').innerText = score;
+      document.getElementById('movesText').innerText = moves;
+    }
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');

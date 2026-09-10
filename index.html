@@ -3,464 +3,273 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>CYBER RUNNER: INFINITE NEON</title>
+  <title>Cyber Runner PRO: Infinite Sector</title>
   <link rel="manifest" href="manifest.json">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@600;700;900&display=swap" rel="stylesheet">
+  <!-- MOTOR GRÁFICO PROFESIONAL PHASER 3 Y FUENTES -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@700&display=swap" rel="stylesheet">
+
   <style>
     * { box-sizing: border-box; touch-action: none; user-select: none; }
-    body { margin: 0; padding: 0; background: #020208; overflow: hidden; font-family: 'Rajdhani', sans-serif; color: #fff; text-align: center; }
-    #gameCanvas { display: block; width: 100vw; height: 100vh; background: #020208; }
+    body { margin: 0; padding: 0; background: #020208; overflow: hidden; font-family: 'Rajdhani', sans-serif; color: #fff; }
+    #game-container { width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; }
     
-    /* HUD EN JUEGO */
-    .ui-overlay {
-      position: absolute; top: 15px; left: 0; width: 100%;
-      display: flex; justify-content: space-around;
-      font-size: 18px; font-weight: 900; pointer-events: none; z-index: 5;
-    }
-    .hud-card {
-      background: rgba(10, 15, 30, 0.85); border: 2px solid #00f0ff;
-      padding: 8px 18px; border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
-      color: #00f0ff; text-shadow: 0 0 8px #00f0ff; font-family: 'Orbitron', sans-serif;
-    }
-
-    /* PANTALLAS Y MODALES */
-    .screen {
+    /* INTERFAZ UI FLOTANTE SOBRE EL MOTOR */
+    .ui-layer {
       position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(2, 2, 8, 0.94); backdrop-filter: blur(12px);
+      pointer-events: none; z-index: 10; display: flex; flex-direction: column;
+      justify-content: space-between; padding: 20px; box-sizing: border-box;
+    }
+
+    .top-hud { display: flex; justify-content: space-between; align-items: center; }
+    .hud-box {
+      background: rgba(8, 15, 30, 0.85); border: 2px solid #00f0ff;
+      padding: 8px 16px; border-radius: 12px; font-family: 'Orbitron', sans-serif;
+      font-size: 16px; color: #00f0ff; box-shadow: 0 0 15px rgba(0,240,255,0.4);
+    }
+
+    /* PANTALLAS DE MENÚ PROFESIONALES */
+    .overlay-screen {
+      position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(2, 2, 8, 0.92); backdrop-filter: blur(10px);
       display: flex; flex-direction: column; justify-content: center; align-items: center;
-      z-index: 10; padding: 20px; box-sizing: border-box;
+      z-index: 20; padding: 20px; text-align: center;
     }
-    
-    .title-banner {
-      font-family: 'Orbitron', sans-serif; font-size: 38px; color: #00f0ff;
-      text-shadow: 0 0 15px #00f0ff, 0 0 35px #ff007f; margin-bottom: 5px; font-weight: 900;
-      letter-spacing: 2px;
-    }
-    .subtitle { font-size: 16px; color: #94a3b8; max-width: 85%; margin-bottom: 20px; font-weight: 700; }
 
-    /* SELECTOR DE AVATARES */
-    .char-selector { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; max-width: 380px; }
-    .char-card {
-      background: #0b1120; border: 2px solid #1e293b;
-      border-radius: 14px; padding: 10px; width: 82px; cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: all 0.25s ease-in-out;
+    .game-title {
+      font-family: 'Orbitron', sans-serif; font-size: 36px; font-weight: 900;
+      color: #00f0ff; text-shadow: 0 0 20px #00f0ff, 0 0 40px #ff007f;
+      margin-bottom: 5px; letter-spacing: 2px;
     }
-    .char-card.selected {
-      border-color: #ff007f; background: #1e1b4b;
-      transform: scale(1.1); box-shadow: 0 0 22px #ff007f;
-    }
-    .char-card canvas { width: 50px; height: 50px; display: block; margin: 0 auto; }
-    .char-card span { display: block; font-size: 10px; font-weight: 700; color: #e2e8f0; margin-top: 6px; font-family: 'Orbitron', sans-serif; }
 
-    /* BOTONES */
-    .btn {
+    .subtitle { color: #94a3b8; font-size: 16px; font-weight: 700; margin-bottom: 25px; }
+
+    .btn-play {
       background: linear-gradient(45deg, #ff007f, #7928ca);
-      color: #fff; border: none; padding: 16px 48px; border-radius: 40px;
-      font-size: 20px; font-weight: 900; font-family: 'Orbitron', sans-serif;
-      cursor: pointer; box-shadow: 0 0 25px #ff007f; transition: transform 0.15s;
-      letter-spacing: 1px; margin-top: 10px;
+      color: #fff; border: none; padding: 18px 50px; border-radius: 40px;
+      font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900;
+      cursor: pointer; box-shadow: 0 0 30px #ff007f; transition: transform 0.1s;
+      pointer-events: auto; letter-spacing: 1px;
     }
-    .btn:active { transform: scale(0.92); }
+    .btn-play:active { transform: scale(0.92); }
 
-    .level-badge {
-      background: linear-gradient(90deg, #0284c7, #00f0ff);
-      padding: 6px 16px; border-radius: 20px; font-size: 14px;
-      font-family: 'Orbitron', sans-serif; margin-bottom: 15px;
-      box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+    .character-select {
+      display: flex; gap: 12px; margin-bottom: 25px; pointer-events: auto;
     }
+    .char-btn {
+      background: #0f172a; border: 2px solid #334155; border-radius: 14px;
+      padding: 10px; width: 85px; cursor: pointer; transition: all 0.2s;
+    }
+    .char-btn.active {
+      border-color: #ff007f; background: #1e1b4b; box-shadow: 0 0 20px #ff007f;
+      transform: scale(1.08);
+    }
+    .char-btn img { width: 45px; height: 45px; display: block; margin: 0 auto; }
+    .char-btn span { font-size: 11px; font-family: 'Orbitron', sans-serif; margin-top: 5px; display: block; }
   </style>
 </head>
 <body>
 
-  <!-- HUD EN JUEGO -->
-  <div class="ui-overlay" id="hud" style="display: none;">
-    <div class="hud-card">NIVEL <span id="hudLevel">1</span></div>
-    <div class="hud-card">💎 <span id="score">0</span></div>
-    <div class="hud-card" style="color: #00ff66; border-color: #00ff66; box-shadow: 0 0 15px rgba(0,255,102,0.4);">META: <span id="goal">0</span></div>
+  <div id="game-container"></div>
+
+  <!-- CAPA DE INTERFAZ -->
+  <div class="ui-layer" id="game-hud" style="display: none;">
+    <div class="top-hud">
+      <div class="hud-box">SECTOR: <span id="hud-level">1</span></div>
+      <div class="hud-box" style="color: #ff007f; border-color: #ff007f;">❤️ <span id="hud-lives">3</span></div>
+      <div class="hud-box" style="color: #00ff66; border-color: #00ff66;">💎 <span id="hud-score">0</span></div>
+    </div>
   </div>
 
-  <!-- PORTADA DE INICIO CINEÁTICA -->
-  <div id="startScreen" class="screen">
-    <div class="title-banner">CYBER RUNNER</div>
-    <div class="subtitle">INFINITE NEON EDITION</div>
-    
-    <div class="level-badge">MÁXIMO NIVEL ALCANZADO: <span id="maxLevelBadge">1</span></div>
+  <!-- PORTADA DE INICIO -->
+  <div class="overlay-screen" id="main-menu">
+    <div class="game-title">CYBER RUNNER PRO</div>
+    <div class="subtitle">EDICIÓN MOTOR GRÁFICO HÍBRIDO</div>
 
-    <div class="subtitle" style="margin-bottom: 10px; color: #00f0ff;">ELIGE TU HÉROE:</div>
-    <div class="char-selector">
-      <div class="char-card selected" id="char-cat" onclick="selectChar('cat')">
-        <canvas id="preview-cat" width="50" height="50"></canvas>
+    <div class="subtitle" style="color: #00f0ff; margin-bottom: 10px;">SELECCIONA TU CÁPSULA:</div>
+    <div class="character-select">
+      <div class="char-btn active" id="btn-cat" onclick="setHero('cat')">
         <span>CYBER CAT</span>
       </div>
-      <div class="char-card" id="char-fox" onclick="selectChar('fox')">
-        <canvas id="preview-fox" width="50" height="50"></canvas>
+      <div class="char-btn" id="btn-fox" onclick="setHero('fox')">
         <span>NEON FOX</span>
       </div>
-      <div class="char-card" id="char-bunny" onclick="selectChar('bunny')">
-        <canvas id="preview-bunny" width="50" height="50"></canvas>
+      <div class="char-btn" id="btn-bunny" onclick="setHero('bunny')">
         <span>MECHA BUNNY</span>
-      </div>
-      <div class="char-card" id="char-panther" onclick="selectChar('panther')">
-        <canvas id="preview-panther" width="50" height="50"></canvas>
-        <span>SHADOW</span>
       </div>
     </div>
 
-    <button class="btn" onclick="startInfiniteGame()">¡INICIAR MISIÓN!</button>
-  </div>
-
-  <!-- PANTALLA NIVEL SUPERADO -->
-  <div id="winModal" class="screen" style="display: none;">
-    <h1 style="color: #00ff66; text-shadow: 0 0 25px #00ff66; font-family: 'Orbitron'; font-size: 34px;">⚡ ¡NIVEL COMPLETADO!</h1>
-    <p class="subtitle" style="color: #e2e8f0;">¡Has superado el Sector <span id="winLevelNum">1</span>!</p>
-    <button class="btn" style="background: linear-gradient(45deg, #10b981, #059669); box-shadow: 0 0 25px #10b981;" onclick="nextLevel()">SIGUIENTE NIVEL ➔</button>
+    <button class="btn-play" onclick="launchGame()">¡DESPEGAR!</button>
   </div>
 
   <!-- PANTALLA GAME OVER -->
-  <div id="gameOverModal" class="screen" style="display: none;">
-    <h1 style="color: #ff007f; text-shadow: 0 0 25px #ff007f; font-family: 'Orbitron'; font-size: 34px;">💥 ¡DESTRUIDO!</h1>
-    <p class="subtitle" style="color: #e2e8f0;">Llegaste hasta el Nivel <span id="failLevelNum">1</span></p>
-    <button class="btn" onclick="retryLevel()">REINTENTAR NIVEL</button>
+  <div class="overlay-screen" id="game-over-screen" style="display: none;">
+    <div class="game-title" style="color: #ff007f; text-shadow: 0 0 20px #ff007f;">💥 MISIÓN FALLIDA</div>
+    <div class="subtitle">Llegaste al Sector <span id="final-level">1</span> con <span id="final-score">0</span> gemas.</div>
+    <button class="btn-play" onclick="restartGame()">REINTENTAR</button>
   </div>
 
-  <canvas id="gameCanvas"></canvas>
-
   <script>
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
+    let selectedHero = 'cat';
+    let currentGame = null;
 
-    function resize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    // SPRITES VECTORIALES HD
-    const sprites = {};
-
-    function createSVGImage(svgString) {
-      const img = new Image();
-      img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgString);
-      return img;
+    function setHero(type) {
+      selectedHero = type;
+      document.querySelectorAll('.char-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`btn-${type}`).classList.add('active');
     }
 
-    sprites.cat = createSVGImage(`
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-        <path d="M20 20 L38 38 L15 45 Z" fill="#00f0ff" />
-        <path d="M80 20 L62 38 L85 45 Z" fill="#00f0ff" />
-        <circle cx="50" cy="50" r="35" fill="#0b1120" stroke="#00f0ff" stroke-width="4"/>
-        <rect x="24" y="38" width="52" height="20" rx="10" fill="#00f0ff"/>
-        <circle cx="38" cy="48" r="4" fill="#ffffff"/>
-        <circle cx="62" cy="48" r="4" fill="#ffffff"/>
-      </svg>
-    `);
+    function launchGame() {
+      document.getElementById('main-menu').style.display = 'none';
+      document.getElementById('game-hud').style.display = 'flex';
 
-    sprites.fox = createSVGImage(`
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-        <path d="M12 12 L40 35 L10 48 Z" fill="#facc15" />
-        <path d="M88 12 L60 35 L90 48 Z" fill="#facc15" />
-        <circle cx="50" cy="50" r="35" fill="#1e1b4b" stroke="#facc15" stroke-width="4"/>
-        <polygon points="18,40 82,40 70,62 30,62" fill="#facc15"/>
-        <circle cx="36" cy="50" r="4" fill="#000"/>
-        <circle cx="64" cy="50" r="4" fill="#000"/>
-      </svg>
-    `);
-
-    sprites.bunny = createSVGImage(`
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-        <rect x="24" y="4" width="14" height="38" rx="7" fill="#ff007f" />
-        <rect x="62" y="4" width="14" height="38" rx="7" fill="#ff007f" />
-        <circle cx="50" cy="55" r="32" fill="#0f172a" stroke="#ff007f" stroke-width="4"/>
-        <rect x="26" y="45" width="48" height="18" rx="9" fill="#ff007f"/>
-        <circle cx="38" cy="54" r="3" fill="#fff"/>
-        <circle cx="62" cy="54" r="3" fill="#fff"/>
-      </svg>
-    `);
-
-    sprites.panther = createSVGImage(`
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-        <path d="M18 22 L35 38 L12 42 Z" fill="#a855f7" />
-        <path d="M82 22 L65 38 L88 42 Z" fill="#a855f7" />
-        <circle cx="50" cy="50" r="35" fill="#090514" stroke="#a855f7" stroke-width="4"/>
-        <ellipse cx="50" cy="48" rx="26" ry="8" fill="#a855f7"/>
-        <circle cx="38" cy="48" r="3" fill="#ffffff"/>
-        <circle cx="62" cy="48" r="3" fill="#ffffff"/>
-      </svg>
-    `);
-
-    sprites.mine = createSVGImage(`
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-        <path d="M50 2 L62 35 L98 50 L62 65 L50 98 L38 65 L2 50 L38 35 Z" fill="#ff0055" />
-        <circle cx="50" cy="50" r="22" fill="#0f172a" stroke="#ff0055" stroke-width="4"/>
-        <circle cx="50" cy="50" r="9" fill="#ff0055"/>
-      </svg>
-    `);
-
-    sprites.gem = createSVGImage(`
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-        <polygon points="50,8 88,34 50,92 12,34" fill="#00ff66" stroke="#ffffff" stroke-width="3"/>
-        <polygon points="50,8 88,34 50,44 12,34" fill="#a7f3d0"/>
-      </svg>
-    `);
-
-    // ESTADO GENERAL
-    let currentLevel = 1;
-    let maxLevelReached = parseInt(localStorage.getItem('cyber_infinite_max_lvl')) || 1;
-    let selectedCharacter = localStorage.getItem('cyber_infinite_char') || 'cat';
-    let isPlaying = false;
-    let score = 0;
-    let levelGoal = 20;
-
-    const starsBg = Array.from({length: 80}, () => ({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      size: Math.random() * 2 + 1,
-      speed: Math.random() * 5 + 2,
-      color: Math.random() > 0.5 ? '#00f0ff' : '#ff007f'
-    }));
-
-    const player = {
-      x: canvas.width / 2,
-      y: canvas.height - 120,
-      size: 32,
-      targetX: canvas.width / 2
-    };
-
-    let enemies = [];
-    let gems = [];
-    let particles = [];
-    let spawnTimer = 0;
-
-    function renderPreviews() {
-      ['cat', 'fox', 'bunny', 'panther'].forEach(type => {
-        const pCanvas = document.getElementById(`preview-${type}`);
-        if(pCanvas) {
-          const pCtx = pCanvas.getContext('2d');
-          pCtx.clearRect(0, 0, 50, 50);
-          pCtx.drawImage(sprites[type], 0, 0, 50, 50);
-        }
-      });
-      document.getElementById('maxLevelBadge').innerText = maxLevelReached;
-    }
-
-    function selectChar(type) {
-      selectedCharacter = type;
-      localStorage.setItem('cyber_infinite_char', type);
-      document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
-      document.getElementById(`char-${type}`).classList.add('selected');
-    }
-
-    function startInfiniteGame() {
-      currentLevel = 1;
-      initLevel(currentLevel);
-    }
-
-    function nextLevel() {
-      currentLevel++;
-      if(currentLevel > maxLevelReached) {
-        maxLevelReached = currentLevel;
-        localStorage.setItem('cyber_infinite_max_lvl', maxLevelReached);
+      if (!currentGame) {
+        initPhaserEngine();
+      } else {
+        currentGame.scene.scenes[0].scene.restart();
       }
-      initLevel(currentLevel);
     }
 
-    function retryLevel() {
-      initLevel(currentLevel);
+    function restartGame() {
+      document.getElementById('game-over-screen').style.display = 'none';
+      document.getElementById('game-hud').style.display = 'flex';
+      currentGame.scene.scenes[0].scene.restart();
     }
 
-    function initLevel(lvl) {
-      score = 0;
-      enemies = [];
-      gems = [];
-      particles = [];
-      player.x = canvas.width / 2;
-      player.targetX = canvas.width / 2;
+    // CONFIGURACIÓN Y LÓGICA DEL MOTOR PHASER 3
+    function initPhaserEngine() {
+      const config = {
+        type: Phaser.AUTO,
+        parent: 'game-container',
+        width: window.innerWidth,
+        height: window.innerHeight,
+        physics: {
+          default: 'arcade',
+          arcade: { gravity: { y: 0 }, debug: false }
+        },
+        scene: { preload: preload, create: create, update: update }
+      };
 
-      // FORMULA DE DIFICULTAD INFINITA
-      levelGoal = Math.floor(20 + (lvl * 15) + Math.pow(lvl, 1.2));
+      currentGame = new Phaser.Game(config);
 
-      document.getElementById('startScreen').style.display = 'none';
-      document.getElementById('winModal').style.display = 'none';
-      document.getElementById('gameOverModal').style.display = 'none';
-      document.getElementById('hud').style.display = 'flex';
+      let player, enemies, gems, score = 0, lives = 3, currentSector = 1, targetScore = 30;
 
-      document.getElementById('hudLevel').innerText = lvl;
-      document.getElementById('score').innerText = '0';
-      document.getElementById('goal').innerText = levelGoal;
+      function preload() {
+        // Texturas generadas en tiempo de ejecución para asegurar carga instantánea HD
+        let g = this.add.graphics();
+        
+        // Player Cat (Cian)
+        g.fillStyle(0x00f0ff, 1); g.fillCircle(20, 20, 18);
+        g.lineStyle(3, 0xffffff); g.strokeCircle(20, 20, 18);
+        g.generateTexture('hero_cat', 40, 40); g.clear();
 
-      isPlaying = true;
-      requestAnimationFrame(gameLoop);
-    }
+        // Player Fox (Dorado)
+        g.fillStyle(0xfacc15, 1); g.fillCircle(20, 20, 18);
+        g.lineStyle(3, 0xffffff); g.strokeCircle(20, 20, 18);
+        g.generateTexture('hero_fox', 40, 40); g.clear();
 
-    function handleMove(e) {
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      player.targetX = clientX;
-    }
-    window.addEventListener('touchmove', handleMove);
-    window.addEventListener('mousemove', handleMove);
+        // Player Bunny (Magenta)
+        g.fillStyle(0xff007f, 1); g.fillCircle(20, 20, 18);
+        g.lineStyle(3, 0xffffff); g.strokeCircle(20, 20, 18);
+        g.generateTexture('hero_bunny', 40, 40); g.clear();
 
-    function createParticles(x, y, color) {
-      for (let i = 0; i < 15; i++) {
-        particles.push({
-          x: x, y: y,
-          vx: (Math.random() - 0.5) * 10,
-          vy: (Math.random() - 0.5) * 10,
-          size: Math.random() * 6 + 2,
-          color: color,
-          life: 1
+        // Obstáculo Mina de Plasma
+        g.fillStyle(0xff0055, 1); g.fillCircle(18, 18, 16);
+        g.lineStyle(2, 0xffffff); g.strokeCircle(18, 18, 16);
+        g.generateTexture('mine', 36, 36); g.clear();
+
+        // Gema Recolectable
+        g.fillStyle(0x00ff66, 1); g.fillRect(4, 4, 16, 16);
+        g.generateTexture('gem', 24, 24); g.clear();
+      }
+
+      function create() {
+        score = 0; lives = 3; currentSector = 1; targetScore = 30;
+        updateHUD();
+
+        // Partículas de fondo (Campo Estelar)
+        const particles = this.add.particles(0, 0, 'gem', {
+          speedY: { min: 100, max: 300 },
+          scale: { start: 0.2, end: 0 },
+          blendMode: 'ADD',
+          lifespan: 2000,
+          frequency: 50
         });
-      }
-    }
 
-    function completeLevel() {
-      isPlaying = false;
-      document.getElementById('winLevelNum').innerText = currentLevel;
-      document.getElementById('winModal').style.display = 'flex';
-    }
+        // Jugador con físicas
+        const textureKey = `hero_${selectedHero}`;
+        player = this.physics.add.sprite(window.innerWidth / 2, window.innerHeight - 100, textureKey);
+        player.setCollideWorldBounds(true);
 
-    function gameOver() {
-      isPlaying = false;
-      createParticles(player.x, player.y, '#ff007f');
-      document.getElementById('failLevelNum').innerText = currentLevel;
-      document.getElementById('gameOverModal').style.display = 'flex';
-    }
+        // Controles táctiles y deslizamiento suave
+        this.input.on('pointermove', function (pointer) {
+          player.x = Phaser.Math.Linear(player.x, pointer.x, 0.2);
+        });
 
-    function spawnEnemy() {
-      // Velocidad y frecuencia escalada por nivel
-      const speedBase = 3.2 + Math.min(lvlSpeedBonus(), 6);
-      const size = 30;
-      enemies.push({
-        x: Math.random() * (canvas.width - size * 2) + size,
-        y: -size * 2,
-        size: size,
-        speed: Math.random() * 1.5 + speedBase,
-        rot: 0
-      });
-    }
+        enemies = this.physics.add.group();
+        gems = this.physics.add.group();
 
-    function lvlSpeedBonus() {
-      return (currentLevel - 1) * 0.45;
-    }
+        // Temporizadores de generación
+        this.time.addEvent({ delay: 600, callback: spawnEnemy, callbackScope: this, loop: true });
+        this.time.addEvent({ delay: 1000, callback: spawnGem, callbackScope: this, loop: true });
 
-    function spawnGem() {
-      gems.push({
-        x: Math.random() * (canvas.width - 50) + 25,
-        y: -25,
-        size: 22,
-        speed: 3.5
-      });
-    }
-
-    function gameLoop() {
-      if (!isPlaying) return;
-
-      const spawnRate = Math.max(12, Math.floor(35 - (currentLevel * 1.5)));
-
-      ctx.fillStyle = 'rgba(2, 2, 8, 0.35)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Fondo Parallax
-      starsBg.forEach(s => {
-        s.y += s.speed;
-        if (s.y > canvas.height) s.y = 0;
-        ctx.fillStyle = s.color;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      player.x += (player.targetX - player.x) * 0.25;
-
-      // Dibujar Héroe
-      ctx.save();
-      ctx.shadowBlur = 20;
-      let auraColor = '#00f0ff';
-      if(selectedCharacter==='fox') auraColor='#facc15';
-      if(selectedCharacter==='bunny') auraColor='#ff007f';
-      if(selectedCharacter==='panther') auraColor='#a855f7';
-      ctx.shadowColor = auraColor;
-      ctx.drawImage(sprites[selectedCharacter], player.x - player.size, player.y - player.size, player.size * 2, player.size * 2);
-      ctx.restore();
-
-      // Generador
-      spawnTimer++;
-      if (spawnTimer % spawnRate === 0) spawnEnemy();
-      if (spawnTimer % 55 === 0) spawnGem();
-
-      // Partículas
-      for (let i = particles.length - 1; i >= 0; i--) {
-        let p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.life -= 0.05;
-        if (p.life <= 0) { particles.splice(i, 1); continue; }
-        ctx.fillStyle = p.color;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
-        ctx.fill();
+        // Colisiones
+        this.physics.add.overlap(player, gems, collectGem, null, this);
+        this.physics.add.overlap(player, enemies, hitEnemy, null, this);
       }
 
-      // Gemas
-      for (let i = gems.length - 1; i >= 0; i--) {
-        let g = gems[i];
-        g.y += g.speed;
+      function update() {
+        // Rotación de enemigos y gemas para dinamismo
+        enemies.children.iterate(e => { if (e) e.rotation += 0.05; });
+        gems.children.iterate(g => { if (g) g.rotation += 0.02; });
+      }
 
-        ctx.save();
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = '#00ff66';
-        ctx.drawImage(sprites.gem, g.x - g.size, g.y - g.size, g.size * 2, g.size * 2);
-        ctx.restore();
+      function spawnEnemy() {
+        const x = Phaser.Math.Between(30, window.innerWidth - 30);
+        const enemy = enemies.create(x, -20, 'mine');
+        enemy.setVelocityY(200 + (currentSector * 30));
+      }
 
-        let dist = Math.hypot(player.x - g.x, player.y - g.y);
-        if (dist < player.size + g.size) {
-          score += 15;
-          document.getElementById('score').innerText = score;
-          createParticles(g.x, g.y, '#00ff66');
-          gems.splice(i, 1);
+      function spawnGem() {
+        const x = Phaser.Math.Between(30, window.innerWidth - 30);
+        const gem = gems.create(x, -20, 'gem');
+        gem.setVelocityY(180);
+      }
 
-          if (score >= levelGoal) {
-            completeLevel();
-            return;
-          }
-        } else if (g.y > canvas.height + 40) {
-          gems.splice(i, 1);
+      function collectGem(player, gem) {
+        gem.destroy();
+        score += 10;
+
+        if (score >= targetScore) {
+          currentSector++;
+          targetScore += currentSector * 25;
+        }
+
+        updateHUD();
+      }
+
+      function hitEnemy(player, enemy) {
+        enemy.destroy();
+        lives--;
+        updateHUD();
+
+        // Parpadeo de invulnerabilidad temporal
+        this.tweens.add({ targets: player, alpha: 0.2, duration: 100, ease: 'Linear', repeat: 3, yoyo: true });
+
+        if (lives <= 0) {
+          document.getElementById('game-hud').style.display = 'none';
+          document.getElementById('final-level').innerText = currentSector;
+          document.getElementById('final-score').innerText = score;
+          document.getElementById('game-over-screen').style.display = 'flex';
+          this.scene.pause();
         }
       }
 
-      // Minas
-      for (let i = enemies.length - 1; i >= 0; i--) {
-        let e = enemies[i];
-        e.y += e.speed;
-        e.rot += 0.05;
-
-        ctx.save();
-        ctx.translate(e.x, e.y);
-        ctx.rotate(e.rot);
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = '#ff0055';
-        ctx.drawImage(sprites.mine, -e.size, -e.size, e.size * 2, e.size * 2);
-        ctx.restore();
-
-        let dist = Math.hypot(player.x - e.x, player.y - e.y);
-        if (dist < player.size + e.size - 6) {
-          gameOver();
-          return;
-        }
-
-        if (e.y > canvas.height + e.size * 2) {
-          enemies.splice(i, 1);
-        }
+      function updateHUD() {
+        document.getElementById('hud-level').innerText = currentSector;
+        document.getElementById('hud-lives').innerText = lives;
+        document.getElementById('hud-score').innerText = score;
       }
-
-      requestAnimationFrame(gameLoop);
-    }
-
-    setTimeout(renderPreviews, 100);
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
     }
   </script>
 </body>

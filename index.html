@@ -3,122 +3,125 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Cyber Dash: Neon Runner</title>
+  <title>CYBER RUNNER: INFINITE NEON</title>
   <link rel="manifest" href="manifest.json">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@600;700;900&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; touch-action: none; user-select: none; }
-    body { margin: 0; padding: 0; background: #030008; overflow: hidden; font-family: 'Rajdhani', sans-serif; color: #fff; text-align: center; }
-    #gameCanvas { display: block; width: 100vw; height: 100vh; background: #030008; }
+    body { margin: 0; padding: 0; background: #020208; overflow: hidden; font-family: 'Rajdhani', sans-serif; color: #fff; text-align: center; }
+    #gameCanvas { display: block; width: 100vw; height: 100vh; background: #020208; }
     
+    /* HUD EN JUEGO */
     .ui-overlay {
       position: absolute; top: 15px; left: 0; width: 100%;
       display: flex; justify-content: space-around;
-      font-size: 20px; font-weight: 700; pointer-events: none; z-index: 5;
+      font-size: 18px; font-weight: 900; pointer-events: none; z-index: 5;
     }
     .hud-card {
-      background: rgba(15, 23, 42, 0.85); border: 2px solid #00f0ff;
-      padding: 6px 18px; border-radius: 12px;
-      box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+      background: rgba(10, 15, 30, 0.85); border: 2px solid #00f0ff;
+      padding: 8px 18px; border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
       color: #00f0ff; text-shadow: 0 0 8px #00f0ff; font-family: 'Orbitron', sans-serif;
     }
 
+    /* PANTALLAS Y MODALES */
     .screen {
       position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(3, 0, 12, 0.92); backdrop-filter: blur(10px);
+      background: rgba(2, 2, 8, 0.94); backdrop-filter: blur(12px);
       display: flex; flex-direction: column; justify-content: center; align-items: center;
       z-index: 10; padding: 20px; box-sizing: border-box;
     }
     
-    h1 {
-      font-family: 'Orbitron', sans-serif; font-size: 32px; color: #00f0ff;
-      text-shadow: 0 0 15px #00f0ff, 0 0 30px #ff007f; margin-bottom: 5px; font-weight: 900;
+    .title-banner {
+      font-family: 'Orbitron', sans-serif; font-size: 38px; color: #00f0ff;
+      text-shadow: 0 0 15px #00f0ff, 0 0 35px #ff007f; margin-bottom: 5px; font-weight: 900;
+      letter-spacing: 2px;
     }
-    p { font-size: 16px; color: #94a3b8; max-width: 85%; margin-bottom: 15px; font-weight: 600; }
+    .subtitle { font-size: 16px; color: #94a3b8; max-width: 85%; margin-bottom: 20px; font-weight: 700; }
 
-    /* SELECTOR DE PERSONAJES NEÓN */
-    .char-selector { display: flex; justify-content: center; gap: 12px; margin-bottom: 20px; }
+    /* SELECTOR DE AVATARES */
+    .char-selector { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; max-width: 380px; }
     .char-card {
-      background: #0f172a; border: 2px solid #1e293b;
-      border-radius: 14px; padding: 10px; width: 90px; cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: all 0.2s;
+      background: #0b1120; border: 2px solid #1e293b;
+      border-radius: 14px; padding: 10px; width: 82px; cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: all 0.25s ease-in-out;
     }
     .char-card.selected {
       border-color: #ff007f; background: #1e1b4b;
-      transform: scale(1.08); box-shadow: 0 0 20px #ff007f;
+      transform: scale(1.1); box-shadow: 0 0 22px #ff007f;
     }
-    .char-card .avatar { font-size: 36px; }
-    .char-card span { display: block; font-size: 12px; font-weight: 700; color: #e2e8f0; margin-top: 4px; font-family: 'Orbitron', sans-serif; }
+    .char-card canvas { width: 50px; height: 50px; display: block; margin: 0 auto; }
+    .char-card span { display: block; font-size: 10px; font-weight: 700; color: #e2e8f0; margin-top: 6px; font-family: 'Orbitron', sans-serif; }
 
-    .map-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-      max-width: 320px; width: 100%; margin-bottom: 20px;
-    }
-    .level-btn {
-      background: #0f172a; border: 2px solid #334155; color: #64748b;
-      border-radius: 12px; padding: 10px 0; font-size: 18px; font-weight: 700;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      cursor: not-allowed; transition: all 0.2s; font-family: 'Orbitron', sans-serif;
-    }
-    .level-btn.unlocked {
-      background: #0284c7; border-color: #00f0ff; color: #fff; cursor: pointer;
-      box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
-    }
-    .level-btn.completed {
-      background: #059669; border-color: #00ff66; color: #fff; cursor: pointer;
-      box-shadow: 0 0 12px rgba(0, 255, 102, 0.4);
-    }
-    .level-btn span { font-size: 9px; margin-top: 2px; font-family: 'Rajdhani', sans-serif; }
-
+    /* BOTONES */
     .btn {
       background: linear-gradient(45deg, #ff007f, #7928ca);
-      color: #fff; border: none; padding: 14px 40px; border-radius: 30px;
-      font-size: 18px; font-weight: 900; font-family: 'Orbitron', sans-serif;
-      cursor: pointer; box-shadow: 0 0 20px #ff007f; transition: transform 0.1s;
+      color: #fff; border: none; padding: 16px 48px; border-radius: 40px;
+      font-size: 20px; font-weight: 900; font-family: 'Orbitron', sans-serif;
+      cursor: pointer; box-shadow: 0 0 25px #ff007f; transition: transform 0.15s;
+      letter-spacing: 1px; margin-top: 10px;
     }
-    .btn:active { transform: scale(0.95); }
+    .btn:active { transform: scale(0.92); }
+
+    .level-badge {
+      background: linear-gradient(90deg, #0284c7, #00f0ff);
+      padding: 6px 16px; border-radius: 20px; font-size: 14px;
+      font-family: 'Orbitron', sans-serif; margin-bottom: 15px;
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+    }
   </style>
 </head>
 <body>
 
+  <!-- HUD EN JUEGO -->
   <div class="ui-overlay" id="hud" style="display: none;">
-    <div class="hud-card">⚡ <span id="score">0</span></div>
-    <div class="hud-card" style="color: #00ff66; border-color: #00ff66; box-shadow: 0 0 12px rgba(0,255,102,0.4);">🎯 <span id="goal">0</span></div>
+    <div class="hud-card">NIVEL <span id="hudLevel">1</span></div>
+    <div class="hud-card">💎 <span id="score">0</span></div>
+    <div class="hud-card" style="color: #00ff66; border-color: #00ff66; box-shadow: 0 0 15px rgba(0,255,102,0.4);">META: <span id="goal">0</span></div>
   </div>
 
-  <div id="mapScreen" class="screen">
-    <h1>⚡ CYBER DASH</h1>
-    <p>Selecciona tu avatar Neón:</p>
+  <!-- PORTADA DE INICIO CINEÁTICA -->
+  <div id="startScreen" class="screen">
+    <div class="title-banner">CYBER RUNNER</div>
+    <div class="subtitle">INFINITE NEON EDITION</div>
     
+    <div class="level-badge">MÁXIMO NIVEL ALCANZADO: <span id="maxLevelBadge">1</span></div>
+
+    <div class="subtitle" style="margin-bottom: 10px; color: #00f0ff;">ELIGE TU HÉROE:</div>
     <div class="char-selector">
       <div class="char-card selected" id="char-cat" onclick="selectChar('cat')">
-        <div class="avatar">🐱</div>
+        <canvas id="preview-cat" width="50" height="50"></canvas>
         <span>CYBER CAT</span>
       </div>
       <div class="char-card" id="char-fox" onclick="selectChar('fox')">
-        <div class="avatar">🦊</div>
+        <canvas id="preview-fox" width="50" height="50"></canvas>
         <span>NEON FOX</span>
       </div>
       <div class="char-card" id="char-bunny" onclick="selectChar('bunny')">
-        <div class="avatar">🐰</div>
+        <canvas id="preview-bunny" width="50" height="50"></canvas>
         <span>MECHA BUNNY</span>
+      </div>
+      <div class="char-card" id="char-panther" onclick="selectChar('panther')">
+        <canvas id="preview-panther" width="50" height="50"></canvas>
+        <span>SHADOW</span>
       </div>
     </div>
 
-    <p>Sectores de misión:</p>
-    <div class="map-grid" id="mapGrid"></div>
+    <button class="btn" onclick="startInfiniteGame()">¡INICIAR MISIÓN!</button>
   </div>
 
+  <!-- PANTALLA NIVEL SUPERADO -->
   <div id="winModal" class="screen" style="display: none;">
-    <h1 style="color: #00ff66; text-shadow: 0 0 20px #00ff66;">⚡ ¡MISIÓN CUMPLIDA!</h1>
-    <p>Has asegurado el sector de energía con éxito.</p>
-    <button class="btn" onclick="showMap()">SIGUIENTE SECTOR</button>
+    <h1 style="color: #00ff66; text-shadow: 0 0 25px #00ff66; font-family: 'Orbitron'; font-size: 34px;">⚡ ¡NIVEL COMPLETADO!</h1>
+    <p class="subtitle" style="color: #e2e8f0;">¡Has superado el Sector <span id="winLevelNum">1</span>!</p>
+    <button class="btn" style="background: linear-gradient(45deg, #10b981, #059669); box-shadow: 0 0 25px #10b981;" onclick="nextLevel()">SIGUIENTE NIVEL ➔</button>
   </div>
 
+  <!-- PANTALLA GAME OVER -->
   <div id="gameOverModal" class="screen" style="display: none;">
-    <h1 style="color: #ff007f; text-shadow: 0 0 20px #ff007f;">💥 ¡SISTEMA CRÍTICO!</h1>
-    <p>Tu avatar sufrió una sobrecarga electromagnética.</p>
-    <button class="btn" onclick="retryLevel()">REINTENTAR</button>
+    <h1 style="color: #ff007f; text-shadow: 0 0 25px #ff007f; font-family: 'Orbitron'; font-size: 34px;">💥 ¡DESTRUIDO!</h1>
+    <p class="subtitle" style="color: #e2e8f0;">Llegaste hasta el Nivel <span id="failLevelNum">1</span></p>
+    <button class="btn" onclick="retryLevel()">REINTENTAR NIVEL</button>
   </div>
 
   <canvas id="gameCanvas"></canvas>
@@ -134,109 +137,162 @@
     window.addEventListener('resize', resize);
     resize();
 
-    const LEVELS = [
-      { level: 1, goal: 20, speed: 3.0, spawnRate: 35 },
-      { level: 2, goal: 40, speed: 3.5, spawnRate: 30 },
-      { level: 3, goal: 60, speed: 4.0, spawnRate: 26 },
-      { level: 4, goal: 90, speed: 4.5, spawnRate: 22 },
-      { level: 5, goal: 120, speed: 5.0, spawnRate: 18 },
-      { level: 6, goal: 160, speed: 5.5, spawnRate: 16 },
-      { level: 7, goal: 200, speed: 6.0, spawnRate: 14 },
-      { level: 8, goal: 250, speed: 6.5, spawnRate: 12 },
-      { level: 9, goal: 300, speed: 7.0, spawnRate: 10 },
-      { level: 10, goal: 400, speed: 8.0, spawnRate: 8 }
-    ];
+    // SPRITES VECTORIALES HD
+    const sprites = {};
 
-    let currentLevelIdx = 0;
-    let unlockedLevel = parseInt(localStorage.getItem('cyber_dash_lvl')) || 1;
-    let selectedCharacter = localStorage.getItem('cyber_dash_char') || 'cat';
+    function createSVGImage(svgString) {
+      const img = new Image();
+      img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgString);
+      return img;
+    }
+
+    sprites.cat = createSVGImage(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+        <path d="M20 20 L38 38 L15 45 Z" fill="#00f0ff" />
+        <path d="M80 20 L62 38 L85 45 Z" fill="#00f0ff" />
+        <circle cx="50" cy="50" r="35" fill="#0b1120" stroke="#00f0ff" stroke-width="4"/>
+        <rect x="24" y="38" width="52" height="20" rx="10" fill="#00f0ff"/>
+        <circle cx="38" cy="48" r="4" fill="#ffffff"/>
+        <circle cx="62" cy="48" r="4" fill="#ffffff"/>
+      </svg>
+    `);
+
+    sprites.fox = createSVGImage(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+        <path d="M12 12 L40 35 L10 48 Z" fill="#facc15" />
+        <path d="M88 12 L60 35 L90 48 Z" fill="#facc15" />
+        <circle cx="50" cy="50" r="35" fill="#1e1b4b" stroke="#facc15" stroke-width="4"/>
+        <polygon points="18,40 82,40 70,62 30,62" fill="#facc15"/>
+        <circle cx="36" cy="50" r="4" fill="#000"/>
+        <circle cx="64" cy="50" r="4" fill="#000"/>
+      </svg>
+    `);
+
+    sprites.bunny = createSVGImage(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+        <rect x="24" y="4" width="14" height="38" rx="7" fill="#ff007f" />
+        <rect x="62" y="4" width="14" height="38" rx="7" fill="#ff007f" />
+        <circle cx="50" cy="55" r="32" fill="#0f172a" stroke="#ff007f" stroke-width="4"/>
+        <rect x="26" y="45" width="48" height="18" rx="9" fill="#ff007f"/>
+        <circle cx="38" cy="54" r="3" fill="#fff"/>
+        <circle cx="62" cy="54" r="3" fill="#fff"/>
+      </svg>
+    `);
+
+    sprites.panther = createSVGImage(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+        <path d="M18 22 L35 38 L12 42 Z" fill="#a855f7" />
+        <path d="M82 22 L65 38 L88 42 Z" fill="#a855f7" />
+        <circle cx="50" cy="50" r="35" fill="#090514" stroke="#a855f7" stroke-width="4"/>
+        <ellipse cx="50" cy="48" rx="26" ry="8" fill="#a855f7"/>
+        <circle cx="38" cy="48" r="3" fill="#ffffff"/>
+        <circle cx="62" cy="48" r="3" fill="#ffffff"/>
+      </svg>
+    `);
+
+    sprites.mine = createSVGImage(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+        <path d="M50 2 L62 35 L98 50 L62 65 L50 98 L38 65 L2 50 L38 35 Z" fill="#ff0055" />
+        <circle cx="50" cy="50" r="22" fill="#0f172a" stroke="#ff0055" stroke-width="4"/>
+        <circle cx="50" cy="50" r="9" fill="#ff0055"/>
+      </svg>
+    `);
+
+    sprites.gem = createSVGImage(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+        <polygon points="50,8 88,34 50,92 12,34" fill="#00ff66" stroke="#ffffff" stroke-width="3"/>
+        <polygon points="50,8 88,34 50,44 12,34" fill="#a7f3d0"/>
+      </svg>
+    `);
+
+    // ESTADO GENERAL
+    let currentLevel = 1;
+    let maxLevelReached = parseInt(localStorage.getItem('cyber_infinite_max_lvl')) || 1;
+    let selectedCharacter = localStorage.getItem('cyber_infinite_char') || 'cat';
     let isPlaying = false;
     let score = 0;
+    let levelGoal = 20;
 
-    const starsBg = Array.from({length: 60}, () => ({
+    const starsBg = Array.from({length: 80}, () => ({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
-      size: Math.random() * 2 + 0.8,
-      speed: Math.random() * 4 + 1,
+      size: Math.random() * 2 + 1,
+      speed: Math.random() * 5 + 2,
       color: Math.random() > 0.5 ? '#00f0ff' : '#ff007f'
     }));
 
     const player = {
       x: canvas.width / 2,
       y: canvas.height - 120,
-      size: 28,
+      size: 32,
       targetX: canvas.width / 2
     };
 
     let enemies = [];
-    let energyOrbs = [];
+    let gems = [];
     let particles = [];
     let spawnTimer = 0;
 
+    function renderPreviews() {
+      ['cat', 'fox', 'bunny', 'panther'].forEach(type => {
+        const pCanvas = document.getElementById(`preview-${type}`);
+        if(pCanvas) {
+          const pCtx = pCanvas.getContext('2d');
+          pCtx.clearRect(0, 0, 50, 50);
+          pCtx.drawImage(sprites[type], 0, 0, 50, 50);
+        }
+      });
+      document.getElementById('maxLevelBadge').innerText = maxLevelReached;
+    }
+
     function selectChar(type) {
       selectedCharacter = type;
-      localStorage.setItem('cyber_dash_char', type);
+      localStorage.setItem('cyber_infinite_char', type);
       document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
       document.getElementById(`char-${type}`).classList.add('selected');
     }
 
-    function renderMap() {
-      selectChar(selectedCharacter);
-      const grid = document.getElementById('mapGrid');
-      grid.innerHTML = '';
-
-      LEVELS.forEach((lvlObj, idx) => {
-        const lvlNum = idx + 1;
-        const btn = document.createElement('div');
-        btn.className = 'level-btn';
-
-        if (lvlNum < unlockedLevel) {
-          btn.classList.add('completed');
-          btn.innerHTML = `SECTOR ${lvlNum} <span>✔ COMPLETADO</span>`;
-          btn.onclick = () => startLevel(idx);
-        } else if (lvlNum === unlockedLevel) {
-          btn.classList.add('unlocked');
-          btn.innerHTML = `SECTOR ${lvlNum} <span>META: ${lvlObj.goal}</span>`;
-          btn.onclick = () => startLevel(idx);
-        } else {
-          btn.innerHTML = `🔒 <span>BLOQUEADO</span>`;
-        }
-
-        grid.appendChild(btn);
-      });
+    function startInfiniteGame() {
+      currentLevel = 1;
+      initLevel(currentLevel);
     }
 
-    function showMap() {
-      document.getElementById('mapScreen').style.display = 'flex';
-      document.getElementById('winModal').style.display = 'none';
-      document.getElementById('gameOverModal').style.display = 'none';
-      document.getElementById('hud').style.display = 'none';
-      isPlaying = false;
-      renderMap();
+    function nextLevel() {
+      currentLevel++;
+      if(currentLevel > maxLevelReached) {
+        maxLevelReached = currentLevel;
+        localStorage.setItem('cyber_infinite_max_lvl', maxLevelReached);
+      }
+      initLevel(currentLevel);
     }
 
-    function startLevel(idx) {
-      currentLevelIdx = idx;
+    function retryLevel() {
+      initLevel(currentLevel);
+    }
+
+    function initLevel(lvl) {
       score = 0;
       enemies = [];
-      energyOrbs = [];
+      gems = [];
       particles = [];
       player.x = canvas.width / 2;
       player.targetX = canvas.width / 2;
 
-      document.getElementById('mapScreen').style.display = 'none';
+      // FORMULA DE DIFICULTAD INFINITA
+      levelGoal = Math.floor(20 + (lvl * 15) + Math.pow(lvl, 1.2));
+
+      document.getElementById('startScreen').style.display = 'none';
       document.getElementById('winModal').style.display = 'none';
       document.getElementById('gameOverModal').style.display = 'none';
       document.getElementById('hud').style.display = 'flex';
 
+      document.getElementById('hudLevel').innerText = lvl;
       document.getElementById('score').innerText = '0';
-      document.getElementById('goal').innerText = LEVELS[idx].goal;
+      document.getElementById('goal').innerText = levelGoal;
 
       isPlaying = true;
       requestAnimationFrame(gameLoop);
     }
-
-    function retryLevel() { startLevel(currentLevelIdx); }
 
     function handleMove(e) {
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -246,12 +302,12 @@
     window.addEventListener('mousemove', handleMove);
 
     function createParticles(x, y, color) {
-      for (let i = 0; i < 12; i++) {
+      for (let i = 0; i < 15; i++) {
         particles.push({
           x: x, y: y,
-          vx: (Math.random() - 0.5) * 8,
-          vy: (Math.random() - 0.5) * 8,
-          size: Math.random() * 5 + 2,
+          vx: (Math.random() - 0.5) * 10,
+          vy: (Math.random() - 0.5) * 10,
+          size: Math.random() * 6 + 2,
           color: color,
           life: 1
         });
@@ -260,124 +316,52 @@
 
     function completeLevel() {
       isPlaying = false;
-      if (currentLevelIdx + 2 > unlockedLevel) {
-        unlockedLevel = currentLevelIdx + 2;
-        localStorage.setItem('cyber_dash_lvl', unlockedLevel);
-      }
+      document.getElementById('winLevelNum').innerText = currentLevel;
       document.getElementById('winModal').style.display = 'flex';
     }
 
     function gameOver() {
       isPlaying = false;
       createParticles(player.x, player.y, '#ff007f');
+      document.getElementById('failLevelNum').innerText = currentLevel;
       document.getElementById('gameOverModal').style.display = 'flex';
     }
 
     function spawnEnemy() {
-      const cfg = LEVELS[currentLevelIdx];
-      const size = Math.random() * 6 + 22;
+      // Velocidad y frecuencia escalada por nivel
+      const speedBase = 3.2 + Math.min(lvlSpeedBonus(), 6);
+      const size = 30;
       enemies.push({
         x: Math.random() * (canvas.width - size * 2) + size,
         y: -size * 2,
         size: size,
-        speed: Math.random() * 1.5 + cfg.speed,
+        speed: Math.random() * 1.5 + speedBase,
         rot: 0
       });
     }
 
-    function spawnOrb() {
-      energyOrbs.push({
-        x: Math.random() * (canvas.width - 40) + 20,
-        y: -20,
-        size: 16,
-        speed: 3.2,
-        pulse: 0
+    function lvlSpeedBonus() {
+      return (currentLevel - 1) * 0.45;
+    }
+
+    function spawnGem() {
+      gems.push({
+        x: Math.random() * (canvas.width - 50) + 25,
+        y: -25,
+        size: 22,
+        speed: 3.5
       });
-    }
-
-    // DIBUJAR AVATAR CYBER-POP
-    function drawPlayer(x, y, size) {
-      ctx.save();
-      ctx.translate(x, y);
-
-      let neonColor = '#00f0ff';
-      if (selectedCharacter === 'fox') neonColor = '#facc15';
-      if (selectedCharacter === 'bunny') neonColor = '#ff007f';
-
-      ctx.shadowBlur = 15;
-      ctx.shadowColor = neonColor;
-
-      // Base del Avatar
-      ctx.fillStyle = '#0f172a';
-      ctx.beginPath();
-      ctx.arc(0, 0, size, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.strokeStyle = neonColor;
-      ctx.lineWidth = 3;
-      ctx.stroke();
-
-      // Visor Neón Sci-Fi
-      ctx.fillStyle = neonColor;
-      ctx.beginPath();
-      ctx.roundRect(-size * 0.6, -size * 0.25, size * 1.2, size * 0.4, 6);
-      ctx.fill();
-
-      // Detalle Brillo en Visor
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(-size * 0.2, -size * 0.1, size * 0.08, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.restore();
-    }
-
-    function drawOrb(orb) {
-      ctx.save();
-      ctx.translate(orb.x, orb.y);
-      orb.pulse += 0.08;
-
-      ctx.shadowBlur = 15;
-      ctx.shadowColor = '#00ff66';
-      ctx.fillStyle = '#00ff66';
-
-      ctx.beginPath();
-      ctx.arc(0, 0, orb.size + Math.sin(orb.pulse) * 2, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.restore();
-    }
-
-    function drawEnemy(e) {
-      ctx.save();
-      ctx.translate(e.x, e.y);
-      e.rot += 0.05;
-      ctx.rotate(e.rot);
-
-      ctx.shadowBlur = 15;
-      ctx.shadowColor = '#ff007f';
-
-      ctx.fillStyle = '#ff007f';
-      ctx.beginPath();
-      ctx.arc(0, 0, e.size, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      ctx.restore();
     }
 
     function gameLoop() {
       if (!isPlaying) return;
 
-      const cfg = LEVELS[currentLevelIdx];
+      const spawnRate = Math.max(12, Math.floor(35 - (currentLevel * 1.5)));
 
-      ctx.fillStyle = 'rgba(3, 0, 8, 0.35)';
+      ctx.fillStyle = 'rgba(2, 2, 8, 0.35)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Fondo Parallax Neón
+      // Fondo Parallax
       starsBg.forEach(s => {
         s.y += s.speed;
         if (s.y > canvas.height) s.y = 0;
@@ -388,11 +372,22 @@
       });
 
       player.x += (player.targetX - player.x) * 0.25;
-      drawPlayer(player.x, player.y, player.size);
 
+      // Dibujar Héroe
+      ctx.save();
+      ctx.shadowBlur = 20;
+      let auraColor = '#00f0ff';
+      if(selectedCharacter==='fox') auraColor='#facc15';
+      if(selectedCharacter==='bunny') auraColor='#ff007f';
+      if(selectedCharacter==='panther') auraColor='#a855f7';
+      ctx.shadowColor = auraColor;
+      ctx.drawImage(sprites[selectedCharacter], player.x - player.size, player.y - player.size, player.size * 2, player.size * 2);
+      ctx.restore();
+
+      // Generador
       spawnTimer++;
-      if (spawnTimer % cfg.spawnRate === 0) spawnEnemy();
-      if (spawnTimer % 65 === 0) spawnOrb();
+      if (spawnTimer % spawnRate === 0) spawnEnemy();
+      if (spawnTimer % 55 === 0) spawnGem();
 
       // Partículas
       for (let i = particles.length - 1; i >= 0; i--) {
@@ -407,43 +402,54 @@
         ctx.fill();
       }
 
-      // Orbes
-      for (let i = energyOrbs.length - 1; i >= 0; i--) {
-        let orb = energyOrbs[i];
-        orb.y += orb.speed;
+      // Gemas
+      for (let i = gems.length - 1; i >= 0; i--) {
+        let g = gems[i];
+        g.y += g.speed;
 
-        drawOrb(orb);
+        ctx.save();
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = '#00ff66';
+        ctx.drawImage(sprites.gem, g.x - g.size, g.y - g.size, g.size * 2, g.size * 2);
+        ctx.restore();
 
-        let dist = Math.hypot(player.x - orb.x, player.y - orb.y);
-        if (dist < player.size + orb.size) {
+        let dist = Math.hypot(player.x - g.x, player.y - g.y);
+        if (dist < player.size + g.size) {
           score += 15;
           document.getElementById('score').innerText = score;
-          createParticles(orb.x, orb.y, '#00ff66');
-          energyOrbs.splice(i, 1);
+          createParticles(g.x, g.y, '#00ff66');
+          gems.splice(i, 1);
 
-          if (score >= cfg.goal) {
+          if (score >= levelGoal) {
             completeLevel();
             return;
           }
-        } else if (orb.y > canvas.height + 40) {
-          energyOrbs.splice(i, 1);
+        } else if (g.y > canvas.height + 40) {
+          gems.splice(i, 1);
         }
       }
 
-      // Enemigos
+      // Minas
       for (let i = enemies.length - 1; i >= 0; i--) {
-        let b = enemies[i];
-        b.y += b.speed;
+        let e = enemies[i];
+        e.y += e.speed;
+        e.rot += 0.05;
 
-        drawEnemy(b);
+        ctx.save();
+        ctx.translate(e.x, e.y);
+        ctx.rotate(e.rot);
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = '#ff0055';
+        ctx.drawImage(sprites.mine, -e.size, -e.size, e.size * 2, e.size * 2);
+        ctx.restore();
 
-        let dist = Math.hypot(player.x - b.x, player.y - b.y);
-        if (dist < player.size + b.size - 4) {
+        let dist = Math.hypot(player.x - e.x, player.y - e.y);
+        if (dist < player.size + e.size - 6) {
           gameOver();
           return;
         }
 
-        if (b.y > canvas.height + b.size * 2) {
+        if (e.y > canvas.height + e.size * 2) {
           enemies.splice(i, 1);
         }
       }
@@ -451,7 +457,7 @@
       requestAnimationFrame(gameLoop);
     }
 
-    showMap();
+    setTimeout(renderPreviews, 100);
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');

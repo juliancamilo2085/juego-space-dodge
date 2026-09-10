@@ -3,239 +3,457 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Candy Blast Adventure</title>
+  <title>Millonarios Chain FC</title>
   <link rel="manifest" href="manifest.json">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; touch-action: none; user-select: none; }
     body {
-      margin: 0; padding: 0; background: #0066ff;
+      margin: 0; padding: 0;
+      background: linear-gradient(180deg, #002244 0%, #001122 100%);
       font-family: 'Fredoka One', cursive, sans-serif;
       display: flex; flex-direction: column; align-items: center;
       height: 100vh; overflow: hidden; color: #fff;
     }
 
-    /* PANTALLA DE PORTADA ESTILO BLOCK BLAST */
+    /* PORTADA ESTILO MILLONARIOS FC */
     .screen {
       position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: linear-gradient(180deg, #1e88e5 0%, #0d47a1 100%);
+      background: linear-gradient(180deg, #003366 0%, #001a33 100%);
       display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-      padding: 40px 20px; z-index: 20; box-sizing: border-box;
+      padding: 45px 20px; z-index: 30; box-sizing: border-box;
     }
 
-    /* TÍTULO 3D VOLUMÉTRICO */
-    .game-logo {
-      font-size: 48px; text-align: center; line-height: 0.9;
-      margin-top: 20px; position: relative;
+    .game-logo { font-size: 42px; text-align: center; line-height: 0.95; margin-top: 10px; }
+    .logo-top {
+      color: #ffffff; text-shadow: 0 6px 0 #002244, 0 10px 25px rgba(0,0,0,0.6);
+      display: block; font-size: 44px; letter-spacing: 1px;
     }
-    .logo-candy {
-      color: #ff3366;
-      text-shadow: 0 6px 0 #990033, 0 10px 20px rgba(0,0,0,0.4);
-      display: block; font-size: 52px;
+    .logo-bottom {
+      color: #0088ff; text-shadow: 0 6px 0 #004488, 0 10px 25px rgba(0,0,0,0.6);
+      display: block; font-size: 38px; letter-spacing: 2px;
     }
-    .logo-blast {
-      color: #00e676;
-      text-shadow: 0 6px 0 #008837, 0 10px 20px rgba(0,0,0,0.4);
-      display: block; font-size: 44px; letter-spacing: 2px;
+
+    .shield-container {
+      width: 90px; height: 90px; margin: 10px auto;
+      filter: drop-shadow(0 0 15px rgba(0, 136, 255, 0.6));
     }
 
     .badge-card {
-      background: rgba(255, 255, 255, 0.95); color: #1e3c72;
-      border-radius: 20px; padding: 15px 30px; width: 100%; max-width: 320px;
+      background: #ffffff; color: #002244;
+      border-radius: 22px; padding: 14px 28px; width: 100%; max-width: 320px;
       display: flex; align-items: center; justify-content: space-between;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.25); margin-bottom: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4); margin-bottom: 20px;
+      border: 2px solid #0088ff;
     }
     .badge-info { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 14px; color: #475569; }
-    .badge-val { font-size: 28px; color: #1e293b; font-weight: 900; }
+    .badge-val { font-size: 26px; color: #003366; font-weight: 900; }
 
-    .menu-buttons {
-      display: flex; flex-direction: column; gap: 15px;
-      width: 100%; max-width: 320px; margin-bottom: 30px;
-    }
-
+    .menu-buttons { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 320px; margin-bottom: 20px; }
     .btn-menu {
-      width: 100%; padding: 18px; border-radius: 22px; border: none;
+      width: 100%; padding: 18px; border-radius: 24px; border: 2px solid #ffffff;
       font-family: 'Fredoka One', cursive; font-size: 22px; color: #fff;
-      display: flex; align-items: center; justify-content: center; gap: 12px;
-      cursor: pointer; transition: transform 0.1s;
-      box-shadow: 0 8px 0 rgba(0,0,0,0.25); position: relative;
+      cursor: pointer; transition: transform 0.1s; position: relative;
     }
-    .btn-menu:active { transform: translateY(4px); box-shadow: 0 3px 0 rgba(0,0,0,0.25); }
-    .btn-adventure { background: linear-gradient(180deg, #ff9800, #f57c00); box-shadow: 0 8px 0 #e65100; }
-    .btn-classic { background: linear-gradient(180deg, #00e676, #00c853); box-shadow: 0 8px 0 #008435; }
+    .btn-menu:active { transform: translateY(4px); }
+    .btn-play { background: linear-gradient(180deg, #0066cc, #003366); box-shadow: 0 8px 0 #001a33; }
 
-    /* HUD DEL JUEGO CANDY */
+    /* HUD EN JUEGO (AZUL Y BLANCO) */
     .game-hud {
-      width: 100%; max-width: 420px; padding: 10px 15px;
+      width: 100%; max-width: 420px; padding: 12px 18px;
       display: flex; justify-content: space-between; align-items: center;
-      background: linear-gradient(180deg, #26a69a, #00897b);
+      background: rgba(0, 34, 68, 0.9); backdrop-filter: blur(10px);
       border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      border: 2px solid #0088ff; box-shadow: 0 6px 20px rgba(0,0,0,0.5);
     }
     .hud-box {
-      background: rgba(255,255,255,0.2); padding: 6px 14px;
-      border-radius: 15px; font-size: 16px; display: flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.15); padding: 8px 14px;
+      border-radius: 14px; font-size: 16px; display: flex; align-items: center; gap: 6px;
+      color: #ffffff;
     }
 
-    /* TABLERO CANDY MATCH-3 */
-    .board-container {
-      flex: 1; display: flex; flex-direction: column;
-      justify-content: center; align-items: center; width: 100%;
-    }
-
-    .grid-board {
-      display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
-      background: rgba(255, 255, 255, 0.25); padding: 8px; border-radius: 20px;
-      backdrop-filter: blur(8px); border: 3px solid rgba(255,255,255,0.4);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    }
-
-    .cell {
-      width: 44px; height: 44px; background: rgba(255, 255, 255, 0.15);
-      border-radius: 10px; display: flex; justify-content: center; align-items: center;
-      cursor: pointer; transition: transform 0.15s;
-    }
-    .cell.selected { transform: scale(1.15); background: rgba(255, 255, 255, 0.4); }
-    .cell svg { width: 36px; height: 36px; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); }
-
-    /* POPUP DE DIÁLOGO */
+    /* INSTRUCCIÓN FLOTANTE */
     .speech-bubble {
-      background: #fff; color: #1e293b; padding: 12px 20px; border-radius: 18px;
-      font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 15px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15); margin-bottom: 15px; text-align: center;
-      position: relative; max-width: 85%;
+      background: #ffffff; color: #002244; padding: 10px 18px; border-radius: 18px;
+      font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 14px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3); margin: 15px 0 5px; text-align: center;
+      border: 2px solid #0088ff;
     }
+
+    /* CANCHA AZUL CANVAS */
+    .canvas-container {
+      flex: 1; display: flex; justify-content: center; align-items: center;
+      width: 100%; position: relative;
+    }
+    canvas {
+      border-radius: 24px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 25px rgba(0, 136, 255, 0.4);
+      border: 3px solid #ffffff;
+    }
+
+    /* MODALES DE RESULTADO */
+    .modal {
+      position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 17, 34, 0.9); backdrop-filter: blur(8px);
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      z-index: 40;
+    }
+    .modal-card {
+      background: #ffffff; padding: 30px 40px; border-radius: 28px;
+      text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5); max-width: 85%;
+      border: 3px solid #0066cc;
+    }
+    .modal-card h2 { margin: 0 0 10px; font-size: 30px; color: #002244; }
+    .modal-card p { font-size: 16px; color: #475569; margin-bottom: 22px; font-weight: 800; font-family: 'Nunito'; }
+    .btn-main {
+      background: #0066cc; color: #fff; border: 2px solid #ffffff; padding: 16px 36px;
+      border-radius: 30px; font-size: 18px; font-weight: 900; cursor: pointer;
+      box-shadow: 0 6px 0 #002244; transition: transform 0.1s;
+    }
+    .btn-main:active { transform: translateY(3px); }
   </style>
 </head>
 <body>
 
-  <!-- PORTADA ESTILO BLOCK BLAST -->
+  <!-- PORTADA DE INICIO -->
   <div class="screen" id="menuScreen">
     <div class="game-logo">
-      <span class="logo-candy">CANDY</span>
-      <span class="logo-blast">BLAST</span>
+      <span class="logo-top">MILLONARIOS</span>
+      <span class="logo-bottom">CHAIN FC ⚽</span>
     </div>
+
+    <!-- ESCUDO VECTORIAL EN PORTADA -->
+    <div class="shield-container" id="mainShield"></div>
 
     <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
       <div class="badge-card">
-        <div class="badge-info">Victorias Diarias</div>
-        <div class="badge-val">🏆 ×0</div>
+        <div class="badge-info">Copa Máxima Alcanzada</div>
+        <div class="badge-val">🏆 <span id="maxLvlText">1</span></div>
       </div>
 
       <div class="menu-buttons">
-        <button class="btn-menu btn-adventure" onclick="startGame()">
-          📍 MODO AVENTURA
-        </button>
-        <button class="btn-menu btn-classic" onclick="startGame()">
-          ♾️ MODO CLÁSICO
-        </button>
+        <button class="btn-menu btn-play" onclick="startGame()">⚽ SAQUE INICIAL</button>
       </div>
     </div>
   </div>
 
   <!-- HUD EN JUEGO -->
   <div class="game-hud" id="hud" style="display: none;">
-    <div class="hud-box">⭐ <span id="scoreText">0</span></div>
-    <div class="hud-box">🎯 META: <span id="goalText">500</span></div>
-    <div class="hud-box">🔄 <span id="movesText">20</span></div>
+    <div class="hud-box">🏆 COPA <span id="lvlText">1</span></div>
+    <div class="hud-box" style="color: #ffffff;">⭐ <span id="scoreText">0</span></div>
+    <div class="hud-box" style="color: #66b2ff;">👟 TIROS: <span id="shotsText">3</span></div>
   </div>
 
-  <!-- TABLERO DE JUEGO CANDY -->
-  <div class="board-container" id="gameBoard" style="display: none;">
-    <div class="speech-bubble">
-      ¡Toca dos caramelos adyacentes para intercambiarlos!
+  <div class="speech-bubble" id="instruction" style="display: none;">
+    ¡Toca un balón embajador para iniciar la jugada en cadena!
+  </div>
+
+  <!-- CANCHA DE JUEGO -->
+  <div class="canvas-container" id="canvasBox" style="display: none;">
+    <canvas id="gameCanvas"></canvas>
+  </div>
+
+  <!-- MODALES -->
+  <div class="modal" id="winModal" style="display: none;">
+    <div class="modal-card">
+      <h2 style="color: #004488;">🎉 ¡VICTORIA EMBAJADORA!</h2>
+      <p>Has completado la jugada perfecta en la cancha.</p>
+      <button class="btn-main" onclick="nextLevel()">SIGUIENTE COPA</button>
     </div>
-    <div class="grid-board" id="grid"></div>
+  </div>
+
+  <div class="modal" id="loseModal" style="display: none;">
+    <div class="modal-card">
+      <h2 style="color: #cc0000;">💥 SIN MOVIMIENTOS</h2>
+      <p>Te quedaste sin tiros. ¡Inténtalo de nuevo!</p>
+      <button class="btn-main" style="background: #cc0000; box-shadow: 0 6px 0 #660000;" onclick="restartLevel()">REINTENTAR</button>
+    </div>
   </div>
 
   <script>
-    // ICONOS CANDY 3D VECTORIALES
-    const CANDIES = [
-      // 0: Drop Amarillo
-      `<svg viewBox="0 0 100 100"><path d="M50 10 C50 10, 85 55, 85 70 C85 85, 70 95, 50 95 C30 95, 15 85, 15 70 C15 55, 50 10, 50 10 Z" fill="#ffd54f" stroke="#f57f17" stroke-width="4"/><ellipse cx="40" cy="50" rx="8" ry="15" fill="#fff" opacity="0.6"/></svg>`,
-      // 1: Flor Púrpura
-      `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="38" fill="#e040fb" stroke="#aa00ff" stroke-width="4"/><circle cx="50" cy="50" r="18" fill="#ea80fc"/><circle cx="40" cy="40" r="6" fill="#fff" opacity="0.7"/></svg>`,
-      // 2: Cuadrado Verde
-      `<svg viewBox="0 0 100 100"><rect x="15" y="15" width="70" height="70" rx="18" fill="#00e676" stroke="#00a152" stroke-width="4"/><rect x="25" y="25" width="20" height="20" rx="5" fill="#fff" opacity="0.5"/></svg>`,
-      // 3: Óvalo Naranja
-      `<svg viewBox="0 0 100 100"><ellipse cx="50" cy="50" rx="38" ry="25" fill="#ff9100" stroke="#d50000" stroke-width="4"/><ellipse cx="40" cy="42" rx="12" ry="6" fill="#fff" opacity="0.6"/></svg>`
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // ESCUDO OFICIAL VECTORIAL DE MILLONARIOS FC (SVG)
+    const MILLONARIOS_SHIELD_SVG = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120">
+        <path d="M10 10 L90 10 L90 60 C90 90, 50 115, 50 115 C50 115, 10 90, 10 60 Z" fill="#002244" stroke="#ffffff" stroke-width="4"/>
+        <path d="M15 15 L85 15 L85 58 C85 85, 50 108, 50 108 C50 108, 15 85, 15 58 Z" fill="#004488"/>
+        <!-- AROS DEL ESCUDO -->
+        <circle cx="38" cy="45" r="14" fill="none" stroke="#ffffff" stroke-width="5"/>
+        <circle cx="62" cy="45" r="14" fill="none" stroke="#ffffff" stroke-width="5"/>
+        <!-- LÍNEAS / M -->
+        <path d="M25 80 L38 60 L50 75 L62 60 L75 80" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+      </svg>
+    `;
+
+    const shieldImg = new Image();
+    shieldImg.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(MILLONARIOS_SHIELD_SVG);
+
+    // Cargar escudo en la portada
+    document.getElementById('mainShield').innerHTML = MILLONARIOS_SHIELD_SVG;
+
+    // PALETA DE BALONES AZUL & BLANCO
+    const BALL_COLORS = [
+      { main: '#0066cc', glow: '#66b2ff', isWhite: false, id: 0 }, // Azul Rey
+      { main: '#ffffff', glow: '#e6f2ff', isWhite: true,  id: 1 }, // Blanco Oficial
+      { main: '#002244', glow: '#0055aa', isWhite: false, id: 2 }, // Azul Oscuro
+      { main: '#00aaff', glow: '#b3e5ff', isWhite: false, id: 3 }  // Azul Celeste
     ];
 
-    const ROWS = 7;
-    const COLS = 7;
-    let board = [];
-    let selectedCell = null;
+    const GRID_SIZE = 6;
+    let cellSize = 50;
+    let grid = [];
+    let waves = [];
+    let particles = [];
+
+    let level = 1;
+    let maxLevel = parseInt(localStorage.getItem('millos_chain_max')) || 1;
+    let shots = 3;
     let score = 0;
-    let moves = 20;
+    let isChainActive = false;
+
+    function resizeCanvas() {
+      const boxSize = Math.min(window.innerWidth - 30, window.innerHeight - 200);
+      canvas.width = boxSize;
+      canvas.height = boxSize;
+      cellSize = canvas.width / GRID_SIZE;
+    }
 
     function startGame() {
       document.getElementById('menuScreen').style.display = 'none';
       document.getElementById('hud').style.display = 'flex';
-      document.getElementById('gameBoard').style.display = 'flex';
-      initBoard();
+      document.getElementById('instruction').style.display = 'block';
+      document.getElementById('canvasBox').style.display = 'flex';
+      document.getElementById('maxLvlText').innerText = maxLevel;
+
+      resizeCanvas();
+      initLevel();
     }
 
-    function initBoard() {
+    function initLevel() {
+      shots = Math.max(2, 5 - Math.floor(level / 3));
       score = 0;
-      moves = 20;
+      isChainActive = false;
+      waves = [];
+      particles = [];
+
       updateHUD();
 
-      board = [];
-      for (let r = 0; r < ROWS; r++) {
-        board[r] = [];
-        for (let c = 0; c < COLS; c++) {
-          board[r][c] = Math.floor(Math.random() * CANDIES.length);
+      grid = [];
+      for (let r = 0; r < GRID_SIZE; r++) {
+        grid[r] = [];
+        for (let c = 0; c < GRID_SIZE; c++) {
+          grid[r][c] = {
+            r, c,
+            colorIdx: Math.floor(Math.random() * BALL_COLORS.length),
+            active: true
+          };
         }
       }
-      renderBoard();
-    }
 
-    function renderBoard() {
-      const grid = document.getElementById('grid');
-      grid.innerHTML = '';
-
-      for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLS; c++) {
-          const cell = document.createElement('div');
-          cell.className = 'cell';
-          if (selectedCell && selectedCell.r === r && selectedCell.c === c) {
-            cell.classList.add('selected');
-          }
-          cell.innerHTML = CANDIES[board[r][c]];
-          cell.onclick = () => onCellClick(r, c);
-          grid.appendChild(cell);
-        }
-      }
-    }
-
-    function onCellClick(r, c) {
-      if (!selectedCell) {
-        selectedCell = { r, c };
-        renderBoard();
-      } else {
-        const isAdjacent = Math.abs(selectedCell.r - r) + Math.abs(selectedCell.c - c) === 1;
-        if (isAdjacent) {
-          // Intercambiar
-          let temp = board[selectedCell.r][selectedCell.c];
-          board[selectedCell.r][selectedCell.c] = board[r][c];
-          board[r][c] = temp;
-
-          moves--;
-          score += 50;
-          updateHUD();
-
-          selectedCell = null;
-          renderBoard();
-        } else {
-          selectedCell = { r, c };
-          renderBoard();
-        }
-      }
+      requestAnimationFrame(gameLoop);
     }
 
     function updateHUD() {
+      document.getElementById('lvlText').innerText = level;
       document.getElementById('scoreText').innerText = score;
-      document.getElementById('movesText').innerText = moves;
+      document.getElementById('shotsText').innerText = shots;
+    }
+
+    function handleCanvasTouch(e) {
+      if (isChainActive || shots <= 0) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const touchX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+      const touchY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+
+      const c = Math.floor(touchX / cellSize);
+      const r = Math.floor(touchY / cellSize);
+
+      if (r >= 0 && r < GRID_SIZE && c >= 0 && c < GRID_SIZE && grid[r][c].active) {
+        shots--;
+        updateHUD();
+        triggerExplosion(r, c, grid[r][c].colorIdx);
+      }
+    }
+
+    canvas.addEventListener('touchstart', (e) => { e.preventDefault(); handleCanvasTouch(e); });
+    canvas.addEventListener('click', handleCanvasTouch);
+
+    function triggerExplosion(r, c, colorIdx) {
+      if (!grid[r][c].active) return;
+
+      grid[r][c].active = false;
+      score += 100;
+      updateHUD();
+
+      const centerX = c * cellSize + cellSize / 2;
+      const centerY = r * cellSize + cellSize / 2;
+      const colObj = BALL_COLORS[colorIdx];
+
+      for (let i = 0; i < 16; i++) {
+        particles.push({
+          x: centerX, y: centerY,
+          vx: (Math.random() - 0.5) * 8,
+          vy: (Math.random() - 0.5) * 8,
+          size: Math.random() * 5 + 2,
+          color: colObj.glow,
+          life: 1
+        });
+      }
+
+      const directions = [ {dr:-1, dc:0}, {dr:1, dc:0}, {dr:0, dc:-1}, {dr:0, dc:1} ];
+      directions.forEach(dir => {
+        waves.push({
+          r, c,
+          dr: dir.dr, dc: dir.dc,
+          x: centerX, y: centerY,
+          colorIdx: colorIdx,
+          speed: 8
+        });
+      });
+
+      isChainActive = true;
+    }
+
+    // DIBUJAR BALÓN AZUL Y BLANCO CON ESCUDO DE MILLONARIOS
+    function drawMillosBall(x, y, radius, colorObj) {
+      ctx.save();
+      ctx.translate(x, y);
+
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = colorObj.glow;
+
+      // Base del Balón
+      ctx.fillStyle = colorObj.main;
+      ctx.beginPath();
+      ctx.arc(0, 0, radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Borde
+      ctx.strokeStyle = colorObj.isWhite ? '#003366' : '#ffffff';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // Escudo Impreso en el centro del balón
+      const shieldSize = radius * 1.2;
+      ctx.drawImage(shieldImg, -shieldSize / 2, -shieldSize / 2, shieldSize, shieldSize);
+
+      ctx.restore();
+    }
+
+    function gameLoop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // CANCHA AZUL EMBAJADORA
+      ctx.fillStyle = '#001a33';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Líneas de cancha en blanco brillante
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
+      ctx.beginPath();
+      ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width * 0.22, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // DIBUJAR BALONES
+      for (let r = 0; r < GRID_SIZE; r++) {
+        for (let c = 0; c < GRID_SIZE; c++) {
+          const item = grid[r][c];
+          if (item.active) {
+            const x = c * cellSize + cellSize / 2;
+            const y = r * cellSize + cellSize / 2;
+            drawMillosBall(x, y, cellSize * 0.36, BALL_COLORS[item.colorIdx]);
+          }
+        }
+      }
+
+      // ONDAS / PASES EN CADENA
+      for (let i = waves.length - 1; i >= 0; i--) {
+        const w = waves[i];
+        w.x += w.dc * w.speed;
+        w.y += w.dr * w.speed;
+
+        ctx.save();
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = BALL_COLORS[w.colorIdx].glow;
+        ctx.fillStyle = BALL_COLORS[w.colorIdx].glow;
+        ctx.beginPath();
+        ctx.arc(w.x, w.y, 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        const targetC = Math.floor(w.x / cellSize);
+        const targetR = Math.floor(w.y / cellSize);
+
+        if (targetR >= 0 && targetR < GRID_SIZE && targetC >= 0 && targetC < GRID_SIZE) {
+          const targetItem = grid[targetR][targetC];
+          if (targetItem.active && targetItem.colorIdx === w.colorIdx) {
+            waves.splice(i, 1);
+            triggerExplosion(targetR, targetC, w.colorIdx);
+            continue;
+          }
+        }
+
+        if (w.x < 0 || w.x > canvas.width || w.y < 0 || w.y > canvas.height) {
+          waves.splice(i, 1);
+        }
+      }
+
+      // PARTÍCULAS AZULES/BLANCAS
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 0.04;
+        if (p.life <= 0) { particles.splice(i, 1); continue; }
+
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.life;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+
+      // EVALUAR ESTADO
+      if (waves.length === 0) {
+        isChainActive = false;
+
+        let activeCount = 0;
+        for (let r = 0; r < GRID_SIZE; r++) {
+          for (let c = 0; c < GRID_SIZE; c++) {
+            if (grid[r][c].active) activeCount++;
+          }
+        }
+
+        if (activeCount === 0) {
+          setTimeout(() => { document.getElementById('winModal').style.display = 'flex'; }, 300);
+          return;
+        } else if (shots <= 0 && !isChainActive) {
+          setTimeout(() => { document.getElementById('loseModal').style.display = 'flex'; }, 500);
+          return;
+        }
+      }
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    function nextLevel() {
+      level++;
+      if (level > maxLevel) {
+        maxLevel = level;
+        localStorage.setItem('millos_chain_max', maxLevel);
+      }
+      document.getElementById('winModal').style.display = 'none';
+      initLevel();
+    }
+
+    function restartLevel() {
+      document.getElementById('loseModal').style.display = 'none';
+      initLevel();
     }
 
     if ('serviceWorker' in navigator) {

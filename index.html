@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Space Dodge Game</title>
+  <style>
+    * { box-sizing: border-box; touch-action: none; user-select: none; }
+    body { margin: 0; padding: 0; background: #0b0f19; overflow: hidden; font-family: system-ui, sans-serif; color: #fff; text-align: center; }
+    #gameCanvas { background: #05070d; display: block; margin: 0 auto; width: 100vw; height: 100vh; }
+    .ui-overlay { position: absolute; top: 15px; left: 0; width: 100%; display: flex; justify-content: space-around; font-size: 18px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none; }
+    .score-box { color: #38bdf8; }
+    .high-box { color: #f59e0b; }
+    .modal { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5,7,13,0.85); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10; }
+    .modal h1 { font-size: 32px; color: #38bdf8; margin-bottom: 10px; }
+    .modal p { font-size: 16px; color: #94a3b8; max-width: 80%; margin-bottom: 25px; }
+    .btn { background: #10b981; color: white; border: none; padding: 14px 28px; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.4); }
+  </style>
+</head>
+<body>
+
+  <div class="ui-overlay">
+    <div class="score-box">PUNTOS: <span id="score">0</span></div>
+    <div class="high-box">MÁX: <span id="highScore">0</span></div>
+  </div>
+
+  <div id="startModal" class="modal">
+    <h1>🚀 SPACE DODGE</h1>
+    <p>Desliza tu dedo en la pantalla para mover la nave. Esquiva los meteoritos y recoge las estrellas.</p>
+    <button class="btn" onclick="startGame()">¡JUGAR AHÓRA!</button>
+  </div>
+
+  <div id="gameOverModal" class="modal" style="display: none;">
+    <h1 style="color: #ef4444;">💥 ¡GAME OVER!</h1>
+    <p>Puntuación final: <strong id="finalScore" style="color:#fff;">0</strong></p>
+    <button class="btn" onclick="startGame()">REINTENTAR</button>
+  </div>
+
+  <canvas id="gameCanvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    let isPlaying = false;
+    let score = 0;
+    let highScore = localStorage.getItem('space_high') || 0;
+    document.getElementById('highScore').innerText = highScore;
+
+    // Player (Ship)
+    const player = {
+      x: canvas.width / 2,
+      y: canvas.height - 100,
+      size: 24,
+      targetX: canvas.width / 2
+    };
+
+    let enemies = [];
+    let stars = [];
+    let spawnTimer = 0;
+
+    // Touch / Mouse controls
+    function handleMove(e) {
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      player.targetX = clientX;
+    }
+    window.addEventListener('touchmove', handleMove);
+    window.addEventListener('mousemove', handleMove);
+
+    function startGame() {
+      document.getElementById('startModal').style.display = 'none';
+      document.getElementById('gameOverModal').style.display = 'none';
+      player.x = canvas.width / 2;
+      player.targetX = canvas.width / 2;
+      enemies = [];
+      stars = [];
+      score = 0;
+      document.getElementById('score').innerText = '0';
+      isPlaying = true;
+      requestAnimationFrame(gameLoop);
+    }
+
+    function spawnEnemy() {
+      const size = Math.random() * 20 + 15;
+      enemies.push({
+        x: Math.random() * (canvas.width - size * 2) + size,
+        y: -size,
+        size: size,
+        speed: Math.random() * 3 + 3 + (score / 50)
+      });
+    }
+
+    function spawnStar() {
+      stars.push({
+        x: Math.random() * (canvas.width - 30) + 15,
+        y: -15,
+        size: 10,
+        speed: 2.5
+      });
+    }
+
+    function gameOver() {
+      isPlaying = false;
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('space_high', highScore);
+        document.getElementById('highScore').innerText = highScore;
+      }
+      document.getElementById('finalScore').innerText = score;
+      document.getElementById('gameOverModal').style.display = 'flex';
+    }
+
+    function gameLoop() {
+      if (!isPlaying) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Interpolate Player Movement
+      player.x += (player.targetX - player.x) * 0.25;
+
+      // Draw Player Ship
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath();
+      ctx.moveTo(player.x, player.y - player.size);
+      ctx.lineTo(player.x - player.size, player.y + player.size);
+      ctx.lineTo(player.x + player.size, player.y + player.size);
+      ctx.closePath();
+      ctx.fill();
+
+      // Spawning
+      spawnTimer++;
+      if (spawnTimer % 20 === 0) spawnEnemy();
+      if (spawnTimer % 90 === 0) spawnStar();
+
+      // Update & Draw Stars (Bonus)
+      for (let i = stars.length - 1; i >= 0; i--) {
+        let s = stars[i];
+        s.y += s.speed;
+
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Collision with Star
+        let dist = Math.hypot(player.x - s.x, player.y - s.y);
+        if (dist < player.size + s.size) {
+          score += 10;
+          document.getElementById('score').innerText = score;
+          stars.splice(i, 1);
+        } else if (s.y > canvas.height + 20) {
+          stars.splice(i, 1);
+        }
+      }
+
+      // Update & Draw Enemies
+      for (let i = enemies.length - 1; i >= 0; i--) {
+        let e = enemies[i];
+        e.y += e.speed;
+
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.arc(e.x, e.y, e.size, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Collision with Enemy
+        let dist = Math.hypot(player.x - e.x, player.y - e.y);
+        if (dist < player.size + e.size - 5) {
+          gameOver();
+          return;
+        }
+
+        if (e.y > canvas.height + e.size) {
+          score += 1;
+          document.getElementById('score').innerText = score;
+          enemies.splice(i, 1);
+        }
+      }
+
+      requestAnimationFrame(gameLoop);
+    }
+  </script>
+</body>
+</html>

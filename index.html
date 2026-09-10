@@ -3,51 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Millonarios Chain FC</title>
+  <title>Blue Strike: Chain Blast 3D</title>
   <link rel="manifest" href="manifest.json">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; touch-action: none; user-select: none; }
     body {
       margin: 0; padding: 0;
-      background: linear-gradient(180deg, #002244 0%, #001122 100%);
+      background: linear-gradient(180deg, #001026 0%, #000814 100%);
       font-family: 'Fredoka One', cursive, sans-serif;
       display: flex; flex-direction: column; align-items: center;
       height: 100vh; overflow: hidden; color: #fff;
     }
 
-    /* PORTADA ESTILO MILLONARIOS FC */
+    /* PORTADA CIBER-ESTADIO 3D */
     .screen {
       position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: linear-gradient(180deg, #003366 0%, #001a33 100%);
+      background: radial-gradient(circle at center, #002b66 0%, #000d20 100%);
       display: flex; flex-direction: column; align-items: center; justify-content: space-between;
       padding: 45px 20px; z-index: 30; box-sizing: border-box;
     }
 
-    .game-logo { font-size: 42px; text-align: center; line-height: 0.95; margin-top: 10px; }
+    .game-logo { font-size: 44px; text-align: center; line-height: 0.95; margin-top: 15px; }
     .logo-top {
-      color: #ffffff; text-shadow: 0 6px 0 #002244, 0 10px 25px rgba(0,0,0,0.6);
-      display: block; font-size: 44px; letter-spacing: 1px;
+      color: #ffffff; text-shadow: 0 6px 0 #004499, 0 10px 30px rgba(0, 136, 255, 0.8);
+      display: block; font-size: 48px; letter-spacing: 2px;
     }
     .logo-bottom {
-      color: #0088ff; text-shadow: 0 6px 0 #004488, 0 10px 25px rgba(0,0,0,0.6);
-      display: block; font-size: 38px; letter-spacing: 2px;
-    }
-
-    .shield-container {
-      width: 90px; height: 90px; margin: 10px auto;
-      filter: drop-shadow(0 0 15px rgba(0, 136, 255, 0.6));
+      color: #00d4ff; text-shadow: 0 6px 0 #0055aa, 0 10px 30px rgba(0, 212, 255, 0.8);
+      display: block; font-size: 38px; letter-spacing: 3px;
     }
 
     .badge-card {
-      background: #ffffff; color: #002244;
-      border-radius: 22px; padding: 14px 28px; width: 100%; max-width: 320px;
+      background: rgba(255, 255, 255, 0.95); color: #001a40;
+      border-radius: 22px; padding: 16px 28px; width: 100%; max-width: 320px;
       display: flex; align-items: center; justify-content: space-between;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.4); margin-bottom: 20px;
-      border: 2px solid #0088ff;
+      box-shadow: 0 10px 30px rgba(0, 136, 255, 0.3); margin-bottom: 20px;
+      border: 2px solid #00d4ff;
     }
     .badge-info { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 14px; color: #475569; }
-    .badge-val { font-size: 26px; color: #003366; font-weight: 900; }
+    .badge-val { font-size: 26px; color: #003380; font-weight: 900; }
 
     .menu-buttons { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 320px; margin-bottom: 20px; }
     .btn-menu {
@@ -56,59 +51,59 @@
       cursor: pointer; transition: transform 0.1s; position: relative;
     }
     .btn-menu:active { transform: translateY(4px); }
-    .btn-play { background: linear-gradient(180deg, #0066cc, #003366); box-shadow: 0 8px 0 #001a33; }
+    .btn-play { background: linear-gradient(180deg, #0088ff, #0044cc); box-shadow: 0 8px 0 #002288, 0 12px 25px rgba(0,136,255,0.5); }
 
-    /* HUD EN JUEGO (AZUL Y BLANCO) */
+    /* HUD EN JUEGO NEÓN AZUL/BLANCO */
     .game-hud {
       width: 100%; max-width: 420px; padding: 12px 18px;
       display: flex; justify-content: space-between; align-items: center;
-      background: rgba(0, 34, 68, 0.9); backdrop-filter: blur(10px);
-      border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
-      border: 2px solid #0088ff; box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+      background: rgba(0, 26, 64, 0.9); backdrop-filter: blur(12px);
+      border-bottom-left-radius: 22px; border-bottom-right-radius: 22px;
+      border: 2px solid #00d4ff; box-shadow: 0 8px 25px rgba(0, 136, 255, 0.4);
     }
     .hud-box {
-      background: rgba(255,255,255,0.15); padding: 8px 14px;
+      background: rgba(255,255,255,0.12); padding: 8px 14px;
       border-radius: 14px; font-size: 16px; display: flex; align-items: center; gap: 6px;
-      color: #ffffff;
+      color: #ffffff; border: 1px solid rgba(255,255,255,0.2);
     }
 
     /* INSTRUCCIÓN FLOTANTE */
     .speech-bubble {
-      background: #ffffff; color: #002244; padding: 10px 18px; border-radius: 18px;
+      background: #ffffff; color: #001a40; padding: 12px 20px; border-radius: 20px;
       font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 14px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3); margin: 15px 0 5px; text-align: center;
-      border: 2px solid #0088ff;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4); margin: 15px 0 5px; text-align: center;
+      border: 2px solid #00d4ff;
     }
 
-    /* CANCHA AZUL CANVAS */
+    /* CANCHA CANVAS 3D HD */
     .canvas-container {
       flex: 1; display: flex; justify-content: center; align-items: center;
       width: 100%; position: relative;
     }
     canvas {
-      border-radius: 24px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 25px rgba(0, 136, 255, 0.4);
+      border-radius: 28px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.7), 0 0 35px rgba(0, 212, 255, 0.4);
       border: 3px solid #ffffff;
     }
 
     /* MODALES DE RESULTADO */
     .modal {
       position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0, 17, 34, 0.9); backdrop-filter: blur(8px);
+      background: rgba(0, 13, 32, 0.9); backdrop-filter: blur(10px);
       display: flex; flex-direction: column; justify-content: center; align-items: center;
       z-index: 40;
     }
     .modal-card {
-      background: #ffffff; padding: 30px 40px; border-radius: 28px;
-      text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5); max-width: 85%;
-      border: 3px solid #0066cc;
+      background: #ffffff; padding: 32px 42px; border-radius: 30px;
+      text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.6); max-width: 85%;
+      border: 3px solid #0088ff;
     }
-    .modal-card h2 { margin: 0 0 10px; font-size: 30px; color: #002244; }
-    .modal-card p { font-size: 16px; color: #475569; margin-bottom: 22px; font-weight: 800; font-family: 'Nunito'; }
+    .modal-card h2 { margin: 0 0 10px; font-size: 32px; color: #001a40; }
+    .modal-card p { font-size: 16px; color: #475569; margin-bottom: 24px; font-weight: 800; font-family: 'Nunito'; }
     .btn-main {
-      background: #0066cc; color: #fff; border: 2px solid #ffffff; padding: 16px 36px;
+      background: #0088ff; color: #fff; border: 2px solid #ffffff; padding: 16px 38px;
       border-radius: 30px; font-size: 18px; font-weight: 900; cursor: pointer;
-      box-shadow: 0 6px 0 #002244; transition: transform 0.1s;
+      box-shadow: 0 6px 0 #003399; transition: transform 0.1s;
     }
     .btn-main:active { transform: translateY(3px); }
   </style>
@@ -118,37 +113,34 @@
   <!-- PORTADA DE INICIO -->
   <div class="screen" id="menuScreen">
     <div class="game-logo">
-      <span class="logo-top">MILLONARIOS</span>
-      <span class="logo-bottom">CHAIN FC ⚽</span>
+      <span class="logo-top">BLUE STRIKE</span>
+      <span class="logo-bottom">CHAIN BLAST 3D ⚡</span>
     </div>
-
-    <!-- ESCUDO VECTORIAL EN PORTADA -->
-    <div class="shield-container" id="mainShield"></div>
 
     <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
       <div class="badge-card">
-        <div class="badge-info">Copa Máxima Alcanzada</div>
+        <div class="badge-info">Sector Máximo Alcanzado</div>
         <div class="badge-val">🏆 <span id="maxLvlText">1</span></div>
       </div>
 
       <div class="menu-buttons">
-        <button class="btn-menu btn-play" onclick="startGame()">⚽ SAQUE INICIAL</button>
+        <button class="btn-menu btn-play" onclick="startGame()">⚡ DISPARO INICIAL</button>
       </div>
     </div>
   </div>
 
   <!-- HUD EN JUEGO -->
   <div class="game-hud" id="hud" style="display: none;">
-    <div class="hud-box">🏆 COPA <span id="lvlText">1</span></div>
+    <div class="hud-box">🏆 SECTOR <span id="lvlText">1</span></div>
     <div class="hud-box" style="color: #ffffff;">⭐ <span id="scoreText">0</span></div>
-    <div class="hud-box" style="color: #66b2ff;">👟 TIROS: <span id="shotsText">3</span></div>
+    <div class="hud-box" style="color: #00d4ff;">⚡ TIROS: <span id="shotsText">3</span></div>
   </div>
 
   <div class="speech-bubble" id="instruction" style="display: none;">
-    ¡Toca un balón embajador para iniciar la jugada en cadena!
+    ¡Toca un núcleo de energía para desatar la reacción en cadena!
   </div>
 
-  <!-- CANCHA DE JUEGO -->
+  <!-- LIENZO CANCHA 3D HD -->
   <div class="canvas-container" id="canvasBox" style="display: none;">
     <canvas id="gameCanvas"></canvas>
   </div>
@@ -156,17 +148,17 @@
   <!-- MODALES -->
   <div class="modal" id="winModal" style="display: none;">
     <div class="modal-card">
-      <h2 style="color: #004488;">🎉 ¡VICTORIA EMBAJADORA!</h2>
-      <p>Has completado la jugada perfecta en la cancha.</p>
-      <button class="btn-main" onclick="nextLevel()">SIGUIENTE COPA</button>
+      <h2 style="color: #0066cc;">🎉 ¡EXPLOSIÓN PERFECTA!</h2>
+      <p>Has asegurado el sector con una cadena impecable.</p>
+      <button class="btn-main" onclick="nextLevel()">SIGUIENTE SECTOR ➔</button>
     </div>
   </div>
 
   <div class="modal" id="loseModal" style="display: none;">
     <div class="modal-card">
-      <h2 style="color: #cc0000;">💥 SIN MOVIMIENTOS</h2>
-      <p>Te quedaste sin tiros. ¡Inténtalo de nuevo!</p>
-      <button class="btn-main" style="background: #cc0000; box-shadow: 0 6px 0 #660000;" onclick="restartLevel()">REINTENTAR</button>
+      <h2 style="color: #cc0044;">💥 SIN CARGAS</h2>
+      <p>Se te agotaron las cargas. ¡Inténtalo de nuevo!</p>
+      <button class="btn-main" style="background: #cc0044; box-shadow: 0 6px 0 #660022;" onclick="restartLevel()">REINTENTAR</button>
     </div>
   </div>
 
@@ -174,31 +166,12 @@
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
-    // ESCUDO OFICIAL VECTORIAL DE MILLONARIOS FC (SVG)
-    const MILLONARIOS_SHIELD_SVG = `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120">
-        <path d="M10 10 L90 10 L90 60 C90 90, 50 115, 50 115 C50 115, 10 90, 10 60 Z" fill="#002244" stroke="#ffffff" stroke-width="4"/>
-        <path d="M15 15 L85 15 L85 58 C85 85, 50 108, 50 108 C50 108, 15 85, 15 58 Z" fill="#004488"/>
-        <!-- AROS DEL ESCUDO -->
-        <circle cx="38" cy="45" r="14" fill="none" stroke="#ffffff" stroke-width="5"/>
-        <circle cx="62" cy="45" r="14" fill="none" stroke="#ffffff" stroke-width="5"/>
-        <!-- LÍNEAS / M -->
-        <path d="M25 80 L38 60 L50 75 L62 60 L75 80" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
-      </svg>
-    `;
-
-    const shieldImg = new Image();
-    shieldImg.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(MILLONARIOS_SHIELD_SVG);
-
-    // Cargar escudo en la portada
-    document.getElementById('mainShield').innerHTML = MILLONARIOS_SHIELD_SVG;
-
-    // PALETA DE BALONES AZUL & BLANCO
-    const BALL_COLORS = [
-      { main: '#0066cc', glow: '#66b2ff', isWhite: false, id: 0 }, // Azul Rey
-      { main: '#ffffff', glow: '#e6f2ff', isWhite: true,  id: 1 }, // Blanco Oficial
-      { main: '#002244', glow: '#0055aa', isWhite: false, id: 2 }, // Azul Oscuro
-      { main: '#00aaff', glow: '#b3e5ff', isWhite: false, id: 3 }  // Azul Celeste
+    // PALETA DE NÚCLEOS 3D AZUL & BLANCO
+    const ORB_PALETTE = [
+      { main: '#0088ff', glow: '#80c8ff', dark: '#004499', isWhite: false, id: 0 }, // Azul Real 3D
+      { main: '#ffffff', glow: '#e6f2ff', dark: '#99ccff', isWhite: true,  id: 1 }, // Blanco Nieve 3D
+      { main: '#00d4ff', glow: '#b3f0ff', dark: '#007799', isWhite: false, id: 2 }, // Azul Cian 3D
+      { main: '#1e3a8a', glow: '#60a5fa', dark: '#0f172a', isWhite: false, id: 3 }  // Azul Noche 3D
     ];
 
     const GRID_SIZE = 6;
@@ -206,9 +179,10 @@
     let grid = [];
     let waves = [];
     let particles = [];
+    let floatingTexts = [];
 
     let level = 1;
-    let maxLevel = parseInt(localStorage.getItem('millos_chain_max')) || 1;
+    let maxLevel = parseInt(localStorage.getItem('blue_strike_max')) || 1;
     let shots = 3;
     let score = 0;
     let isChainActive = false;
@@ -237,6 +211,7 @@
       isChainActive = false;
       waves = [];
       particles = [];
+      floatingTexts = [];
 
       updateHUD();
 
@@ -246,8 +221,10 @@
         for (let c = 0; c < GRID_SIZE; c++) {
           grid[r][c] = {
             r, c,
-            colorIdx: Math.floor(Math.random() * BALL_COLORS.length),
-            active: true
+            colorIdx: Math.floor(Math.random() * ORB_PALETTE.length),
+            active: true,
+            pulse: Math.random() * Math.PI,
+            scale: 1
           };
         }
       }
@@ -285,24 +262,32 @@
       if (!grid[r][c].active) return;
 
       grid[r][c].active = false;
-      score += 100;
+      score += 150;
       updateHUD();
 
       const centerX = c * cellSize + cellSize / 2;
       const centerY = r * cellSize + cellSize / 2;
-      const colObj = BALL_COLORS[colorIdx];
+      const colObj = ORB_PALETTE[colorIdx];
 
-      for (let i = 0; i < 16; i++) {
+      // Texto Flotante "+150"
+      floatingTexts.push({
+        x: centerX, y: centerY,
+        text: "+150", opacity: 1, vy: -1.5
+      });
+
+      // Partículas Neón 3D
+      for (let i = 0; i < 20; i++) {
         particles.push({
           x: centerX, y: centerY,
-          vx: (Math.random() - 0.5) * 8,
-          vy: (Math.random() - 0.5) * 8,
-          size: Math.random() * 5 + 2,
+          vx: (Math.random() - 0.5) * 9,
+          vy: (Math.random() - 0.5) * 9,
+          size: Math.random() * 6 + 3,
           color: colObj.glow,
           life: 1
         });
       }
 
+      // Ondas Expansivas en 4 direcciones
       const directions = [ {dr:-1, dc:0}, {dr:1, dc:0}, {dr:0, dc:-1}, {dr:0, dc:1} ];
       directions.forEach(dir => {
         waves.push({
@@ -310,35 +295,48 @@
           dr: dir.dr, dc: dir.dc,
           x: centerX, y: centerY,
           colorIdx: colorIdx,
-          speed: 8
+          speed: 8.5
         });
       });
 
       isChainActive = true;
     }
 
-    // DIBUJAR BALÓN AZUL Y BLANCO CON ESCUDO DE MILLONARIOS
-    function drawMillosBall(x, y, radius, colorObj) {
+    // DIBUJAR ESFERA / NÚCLEO PSEUDO-3D HD
+    function drawOrb3D(x, y, radius, colorObj, pulse) {
       ctx.save();
       ctx.translate(x, y);
 
-      ctx.shadowBlur = 12;
-      ctx.shadowColor = colorObj.glow;
+      let pRadius = radius + Math.sin(pulse) * 2;
 
-      // Base del Balón
-      ctx.fillStyle = colorObj.main;
+      // Sombra Volumétrica en el Suelo
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
       ctx.beginPath();
-      ctx.arc(0, 0, radius, 0, Math.PI * 2);
+      ctx.ellipse(0, pRadius * 0.8, pRadius * 0.8, pRadius * 0.3, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Borde
-      ctx.strokeStyle = colorObj.isWhite ? '#003366' : '#ffffff';
-      ctx.lineWidth = 2.5;
-      ctx.stroke();
+      // Resplandor Neón de Fondo
+      ctx.shadowBlur = 18;
+      ctx.shadowColor = colorObj.glow;
 
-      // Escudo Impreso en el centro del balón
-      const shieldSize = radius * 1.2;
-      ctx.drawImage(shieldImg, -shieldSize / 2, -shieldSize / 2, shieldSize, shieldSize);
+      // Gradiente 3D Esférico
+      const grad = ctx.createRadialGradient(-pRadius * 0.35, -pRadius * 0.35, 2, 0, 0, pRadius);
+      grad.addColorStop(0, '#ffffff');
+      grad.addColorStop(0.35, colorObj.glow);
+      grad.addColorStop(0.85, colorObj.main);
+      grad.addColorStop(1, colorObj.dark);
+
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(0, 0, pRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Anillo de Energía Orbital 3D
+      ctx.strokeStyle = colorObj.isWhite ? '#0088ff' : '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, pRadius * 1.15, pRadius * 0.4, pulse * 0.5, 0, Math.PI * 2);
+      ctx.stroke();
 
       ctx.restore();
     }
@@ -346,43 +344,59 @@
     function gameLoop() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // CANCHA AZUL EMBAJADORA
-      ctx.fillStyle = '#001a33';
+      // CANCHA / ESCENARIO CIBERNÉTICO AZUL
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      bgGrad.addColorStop(0, '#001a40');
+      bgGrad.addColorStop(1, '#000d20');
+      ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Líneas de cancha en blanco brillante
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
-      ctx.lineWidth = 3;
-      ctx.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
-      ctx.beginPath();
-      ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width * 0.22, 0, Math.PI * 2);
-      ctx.stroke();
+      // Rejilla Ciber-Estadio
+      ctx.strokeStyle = 'rgba(0, 212, 255, 0.15)';
+      ctx.lineWidth = 1.5;
+      for (let i = 0; i <= GRID_SIZE; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * cellSize, 0); ctx.lineTo(i * cellSize, canvas.height);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, i * cellSize); ctx.lineTo(canvas.width, i * cellSize);
+        ctx.stroke();
+      }
 
-      // DIBUJAR BALONES
+      // DIBUJAR ESFERAS 3D
       for (let r = 0; r < GRID_SIZE; r++) {
         for (let c = 0; c < GRID_SIZE; c++) {
           const item = grid[r][c];
           if (item.active) {
+            item.pulse += 0.05;
             const x = c * cellSize + cellSize / 2;
             const y = r * cellSize + cellSize / 2;
-            drawMillosBall(x, y, cellSize * 0.36, BALL_COLORS[item.colorIdx]);
+            drawOrb3D(x, y, cellSize * 0.32, ORB_PALETTE[item.colorIdx], item.pulse);
           }
         }
       }
 
-      // ONDAS / PASES EN CADENA
+      // ONDAS DE PASES / DISPAROS
       for (let i = waves.length - 1; i >= 0; i--) {
         const w = waves[i];
         w.x += w.dc * w.speed;
         w.y += w.dr * w.speed;
 
         ctx.save();
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = BALL_COLORS[w.colorIdx].glow;
-        ctx.fillStyle = BALL_COLORS[w.colorIdx].glow;
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = ORB_PALETTE[w.colorIdx].glow;
+        ctx.fillStyle = ORB_PALETTE[w.colorIdx].glow;
         ctx.beginPath();
         ctx.arc(w.x, w.y, 8, 0, Math.PI * 2);
         ctx.fill();
+
+        // Estela
+        ctx.strokeStyle = ORB_PALETTE[w.colorIdx].glow;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(w.x, w.y);
+        ctx.lineTo(w.x - w.dc * 15, w.y - w.dr * 15);
+        ctx.stroke();
         ctx.restore();
 
         const targetC = Math.floor(w.x / cellSize);
@@ -402,20 +416,37 @@
         }
       }
 
-      // PARTÍCULAS AZULES/BLANCAS
+      // PARTÍCULAS
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
         p.x += p.vx;
         p.y += p.vy;
-        p.life -= 0.04;
+        p.life -= 0.035;
         if (p.life <= 0) { particles.splice(i, 1); continue; }
 
         ctx.fillStyle = p.color;
         ctx.globalAlpha = p.life;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
         ctx.fill();
         ctx.globalAlpha = 1;
+      }
+
+      // TEXTOS FLOTANTES (+150)
+      for (let i = floatingTexts.length - 1; i >= 0; i--) {
+        const ft = floatingTexts[i];
+        ft.y += ft.vy;
+        ft.opacity -= 0.025;
+        if (ft.opacity <= 0) { floatingTexts.splice(i, 1); continue; }
+
+        ctx.save();
+        ctx.font = '20px "Fredoka One"';
+        ctx.fillStyle = `rgba(255, 255, 255, ${ft.opacity})`;
+        ctx.shadowColor = '#00d4ff';
+        ctx.shadowBlur = 8;
+        ctx.textAlign = 'center';
+        ctx.fillText(ft.text, ft.x, ft.y);
+        ctx.restore();
       }
 
       // EVALUAR ESTADO
@@ -445,7 +476,7 @@
       level++;
       if (level > maxLevel) {
         maxLevel = level;
-        localStorage.setItem('millos_chain_max', maxLevel);
+        localStorage.setItem('blue_strike_max', maxLevel);
       }
       document.getElementById('winModal').style.display = 'none';
       initLevel();

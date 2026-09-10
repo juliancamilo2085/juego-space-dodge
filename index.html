@@ -6,7 +6,6 @@
   <title>Blue Strike: Football Match 3D Saga</title>
   <link rel="manifest" href="manifest.json">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
-  <!-- MOTOR TRES.JS (THREE.JS WEBGL 3D REAL) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <style>
     * { box-sizing: border-box; touch-action: none; user-select: none; }
@@ -17,23 +16,21 @@
       height: 100vh; overflow: hidden; color: #fff;
     }
 
-    /* PANTALLAS DE NAVEGACIÓN Y MENÚS */
+    /* PANTALLA DE INICIO Y COBERTURA DE AUDIO */
+    .audio-unlock-overlay {
+      position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: radial-gradient(circle at center, #002b66 0%, #000814 100%);
+      z-index: 100; display: flex; flex-direction: column;
+      justify-content: center; align-items: center; text-align: center; padding: 25px;
+    }
+
     .screen {
       position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
       background: radial-gradient(circle at center, #002b66 0%, #000814 100%);
       display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-      padding: 25px 20px; z-index: 30; box-sizing: border-box;
+      padding: 20px; z-index: 30; box-sizing: border-box;
     }
 
-    /* OVERLAY INICIAL PARA AUDIO */
-    .audio-unlock-overlay {
-      position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0, 10, 30, 0.95); z-index: 100; display: flex;
-      flex-direction: column; justify-content: center; align-items: center; text-align: center;
-      padding: 30px;
-    }
-
-    /* BARRA SUPERIOR NAV */
     .top-navbar {
       width: 100%; max-width: 420px; display: flex;
       justify-content: space-between; align-items: center; z-index: 35;
@@ -50,27 +47,25 @@
       justify-content: center; align-items: center; font-size: 20px; cursor: pointer;
       box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
-    .btn-icon:active { transform: scale(0.92); }
 
-    /* LOGO */
     .game-logo { font-size: 32px; text-align: center; line-height: 0.95; margin-top: 5px; }
     .logo-top { color: #ffffff; text-shadow: 0 5px 0 #002255, 0 10px 25px rgba(0, 136, 255, 0.8); display: block; letter-spacing: 2px; }
     .logo-bottom { color: #00d4ff; text-shadow: 0 5px 0 #004488, 0 10px 25px rgba(0, 212, 255, 0.8); display: block; font-size: 26px; letter-spacing: 3px; }
 
-    /* CONTENEDOR 3D PERSONAJE JUGADOR */
+    /* CONTENEDOR THREE.JS PERSONAJE 3D HUMANO */
     #hero3d-container {
-      width: 100%; max-width: 320px; height: 210px; margin: 5px 0;
+      width: 100%; max-width: 340px; height: 210px; margin: 5px 0;
       border-radius: 24px; border: 2px solid #00d4ff;
-      box-shadow: 0 0 30px rgba(0, 212, 255, 0.4); overflow: hidden;
+      box-shadow: 0 0 30px rgba(0, 212, 255, 0.5); overflow: hidden;
       background: radial-gradient(circle at center, #003380 0%, #000a1a 100%);
     }
 
-    /* MAPA DE TORNEO / NIVELES */
+    /* MAPA DE TORNEO INFINITO */
     .world-map-container {
       flex: 1; width: 100%; max-width: 380px; margin: 10px 0;
       overflow-y: auto; display: flex; flex-direction: column-reverse;
       align-items: center; gap: 18px; padding: 15px 10px;
-      background: rgba(0, 20, 50, 0.4); border-radius: 20px;
+      background: rgba(0, 20, 50, 0.5); border-radius: 20px;
       border: 2px solid rgba(0, 212, 255, 0.3);
     }
     .map-node {
@@ -89,7 +84,6 @@
       100% { box-shadow: 0 0 30px #00d4ff, 0 6px 0 #003399; }
     }
 
-    /* BOTONES */
     .btn-menu {
       width: 100%; max-width: 320px; padding: 16px; border-radius: 24px; border: 2px solid #ffffff;
       font-family: 'Fredoka One', cursive; font-size: 20px; color: #fff;
@@ -135,7 +129,6 @@
     .cell.exploding { transform: scale(0); opacity: 0; transition: transform 0.25s, opacity 0.25s; }
     .cell svg { width: 38px; height: 38px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
 
-    /* POTENCIADORES */
     .boosters-bar { display: flex; gap: 15px; margin: 10px 0 15px; }
     .booster-btn {
       background: #003380; border: 2px solid #00d4ff; border-radius: 18px;
@@ -145,7 +138,6 @@
     }
     .booster-btn:active { transform: translateY(3px); }
 
-    /* TEXTO ANIMADO GOL */
     .goal-popup {
       position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) scale(0);
       font-size: 48px; font-family: 'Fredoka One'; color: #00f0ff;
@@ -154,7 +146,6 @@
     }
     .goal-popup.active { transform: translate(-50%, -50%) scale(1.3); }
 
-    /* MODALES */
     .modal {
       position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(0, 13, 32, 0.92); backdrop-filter: blur(10px);
@@ -187,9 +178,9 @@
 </head>
 <body>
 
-  <!-- DESBLOQUEO DE AUDIO INICIAL -->
+  <!-- PANTALLA INICIAL DESBLOQUEO AUDIO -->
   <div class="audio-unlock-overlay" id="audioOverlay">
-    <div class="game-logo" style="margin-bottom:20px;">
+    <div class="game-logo" style="margin-bottom:25px;">
       <span class="logo-top">BLUE STRIKE</span>
       <span class="logo-bottom">MATCH 3D SAGA ⚽</span>
     </div>
@@ -198,7 +189,7 @@
 
   <div class="goal-popup" id="goalPopup">¡GOOOOL!</div>
 
-  <!-- PORTADA CON PERSONAJE 3D Y MAPA -->
+  <!-- PORTADA CON PERSONAJE HUMANO 3D Y MAPA DE TORNEO -->
   <div class="screen" id="mapScreen">
     <div class="top-navbar">
       <div class="hud-pill">❤️ <span id="livesCount">5</span></div>
@@ -211,7 +202,7 @@
       <span class="logo-bottom">MATCH 3D SAGA ⚽</span>
     </div>
 
-    <!-- ESCENA THREE.JS PERSONAJE 3D JUGADOR -->
+    <!-- RENDER 3D HUMANO EN THREE.JS -->
     <div id="hero3d-container"></div>
 
     <div class="world-map-container" id="nodesContainer"></div>
@@ -226,9 +217,9 @@
     <div class="hud-pill" style="color:#0088ff;">🔄 <span id="movesText">20</span></div>
   </div>
 
-  <!-- TABLERO PRINCIPAL -->
+  <!-- TABLERO -->
   <div class="board-container" id="gameBoard" style="display: none;">
-    <div class="speech-bubble">¡Alinea 3 balones o trofeos para marcar un Golazo!</div>
+    <div class="speech-bubble">¡Alinea 3 balones, escudos, guayos o copas para marcar un Golazo!</div>
     <div class="grid-board" id="grid"></div>
 
     <div class="boosters-bar">
@@ -276,65 +267,77 @@
   </div>
 
   <script>
-    // MOTOR THREE.JS PERSONAJE 3D Y BALÓN FREESTYLE
-    let scene, camera, renderer, heroGroup, ball3D;
+    // RENDERIZADO 3D HUMANO CON THREE.JS
+    let scene, camera, renderer, heroGroup, ball3D, legLeft, legRight;
 
     function init3DHero() {
       const container = document.getElementById('hero3d-container');
+      if (!container) return;
+      
       scene = new THREE.Scene();
       camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-      camera.position.set(0, 1.2, 3.5);
+      camera.position.set(0, 1.2, 3.8);
 
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(container.clientWidth, container.clientHeight);
       renderer.setPixelRatio(window.devicePixelRatio);
       container.appendChild(renderer.domElement);
 
-      // Iluminación Estadio 3D
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
       scene.add(ambientLight);
 
-      const spotLight = new THREE.SpotLight(0x00d4ff, 1.5);
-      spotLight.position.set(2, 5, 3);
-      scene.add(spotLight);
+      const dirLight = new THREE.DirectionalLight(0x00d4ff, 1.2);
+      dirLight.position.set(3, 5, 4);
+      scene.add(dirLight);
 
       heroGroup = new THREE.Group();
 
-      // Torso / Camiseta Azul
-      const shirtGeo = new THREE.CylinderGeometry(0.35, 0.3, 0.7, 16);
-      const shirtMat = new THREE.MeshStandardMaterial({ color: 0x0055cc, roughness: 0.3 });
+      // Torso / Camiseta Azul y Blanca
+      const shirtGeo = new THREE.CylinderGeometry(0.32, 0.28, 0.65, 16);
+      const shirtMat = new THREE.MeshStandardMaterial({ color: 0x0044cc, roughness: 0.3 });
       const shirt = new THREE.Mesh(shirtGeo, shirtMat);
       shirt.position.y = 0.35;
       heroGroup.add(shirt);
 
-      // Franja Blanca
-      const stripeGeo = new THREE.BoxGeometry(0.1, 0.71, 0.36);
+      const stripeGeo = new THREE.BoxGeometry(0.12, 0.66, 0.34);
       const stripeMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
       const stripe = new THREE.Mesh(stripeGeo, stripeMat);
       stripe.position.y = 0.35;
       heroGroup.add(stripe);
 
-      // Cabeza
-      const headGeo = new THREE.SphereGeometry(0.28, 24, 24);
-      const headMat = new THREE.MeshStandardMaterial({ color: 0xffdbac });
+      // Cabeza Humana
+      const headGeo = new THREE.SphereGeometry(0.26, 24, 24);
+      const headMat = new THREE.MeshStandardMaterial({ color: 0xffdbac, roughness: 0.5 });
       const head = new THREE.Mesh(headGeo, headMat);
-      head.position.y = 0.9;
+      head.position.y = 0.88;
       heroGroup.add(head);
 
-      // Cabello Cyberpunk Azul
-      const hairGeo = new THREE.ConeGeometry(0.3, 0.25, 16);
+      // Cabello Deportivo Azul
+      const hairGeo = new THREE.SphereGeometry(0.27, 16, 16, 0, Math.PI * 2, 0, Math.PI * 0.5);
       const hairMat = new THREE.MeshStandardMaterial({ color: 0x00d4ff });
       const hair = new THREE.Mesh(hairGeo, hairMat);
-      hair.position.y = 1.15;
+      hair.position.y = 0.95;
       heroGroup.add(hair);
+
+      // Extremidades (Piernas)
+      const legGeo = new THREE.CylinderGeometry(0.08, 0.07, 0.5, 12);
+      const legMat = new THREE.MeshStandardMaterial({ color: 0xffdbac });
+
+      legLeft = new THREE.Mesh(legGeo, legMat);
+      legLeft.position.set(-0.15, -0.2, 0);
+      heroGroup.add(legLeft);
+
+      legRight = new THREE.Mesh(legGeo, legMat);
+      legRight.position.set(0.15, -0.2, 0);
+      heroGroup.add(legRight);
 
       scene.add(heroGroup);
 
-      // Balón 3D Freestyle
-      const ballGeo = new THREE.SphereGeometry(0.18, 16, 16);
+      // Balón de Fútbol 3D
+      const ballGeo = new THREE.SphereGeometry(0.18, 20, 20);
       const ballMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 });
       ball3D = new THREE.Mesh(ballGeo, ballMat);
-      ball3D.position.set(0, -0.2, 0.5);
+      ball3D.position.set(0, -0.1, 0.5);
       scene.add(ball3D);
 
       animate3D();
@@ -343,22 +346,27 @@
     let clock3D = 0;
     function animate3D() {
       requestAnimationFrame(animate3D);
-      clock3D += 0.05;
+      clock3D += 0.06;
 
       if (ball3D) {
-        ball3D.position.y = -0.2 + Math.abs(Math.sin(clock3D * 2)) * 0.35;
+        ball3D.position.y = -0.1 + Math.abs(Math.sin(clock3D * 2.2)) * 0.4;
         ball3D.rotation.x += 0.05;
-        ball3D.rotation.y += 0.03;
+        ball3D.rotation.y += 0.04;
       }
+
+      if (legRight && legLeft) {
+        legRight.rotation.x = Math.sin(clock3D * 2.2) * 0.3;
+        legLeft.rotation.x = -Math.sin(clock3D * 2.2) * 0.3;
+      }
+
       if (heroGroup) {
-        heroGroup.position.y = Math.sin(clock3D) * 0.04;
-        heroGroup.rotation.y = Math.sin(clock3D * 0.5) * 0.15;
+        heroGroup.position.y = Math.sin(clock3D) * 0.03;
       }
 
       renderer.render(scene, camera);
     }
 
-    // AUDIO WEB AUDIO API
+    // SONIDO Y AUDIO WEB AUDIO API
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
     let bgOsc = null, bgGain = null;
@@ -416,7 +424,7 @@
       if (settings.vib && navigator.vibrate) { navigator.vibrate(60); }
     }
 
-    // FICHAS 3D VECTORIALES
+    // FICHAS VECTORIALES HD 3D
     const ITEMS_3D = [
       `<svg viewBox="0 0 100 100"><defs><radialGradient id="g0" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#0088ff"/><stop offset="100%" stop-color="#001144"/></radialGradient></defs><circle cx="50" cy="50" r="42" fill="url(#g0)" stroke="#ffffff" stroke-width="3"/><polygon points="50,25 65,35 60,52 40,52 35,35" fill="#ffffff" opacity="0.95"/></svg>`,
       `<svg viewBox="0 0 100 100"><defs><radialGradient id="g1" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#003380"/></radialGradient></defs><path d="M50 12 L82 25 L82 58 C82 78, 50 90, 50 90 C50 90, 18 78, 18 58 L18 25 Z" fill="url(#g1)" stroke="#ffffff" stroke-width="3"/><circle cx="50" cy="48" r="12" fill="#ffffff"/></svg>`,
@@ -436,6 +444,7 @@
     let score = 0, goalScore = 300, moves = 20;
     let isProcessing = false;
 
+    // GENERADOR INFINITO DE TORNEO EN MAPA
     function renderMapNodes() {
       const container = document.getElementById('nodesContainer');
       if (!container) return;
@@ -443,7 +452,9 @@
       document.getElementById('livesCount').innerText = lives;
       document.getElementById('totalStars').innerText = totalStarsCount;
 
-      for (let i = 1; i <= 20; i++) {
+      const maxDisplayLevel = Math.max(50, currentUnlockedLevel + 10);
+
+      for (let i = 1; i <= maxDisplayLevel; i++) {
         const node = document.createElement('div');
         node.className = 'map-node';
         if (i < currentUnlockedLevel) node.classList.add('completed');
@@ -597,7 +608,6 @@
         updateHUD();
         await new Promise(res => setTimeout(res, 220));
 
-        // Gravedad
         for (let c = 0; c < COLS; c++) {
           let emptyRow = ROWS - 1;
           for (let r = ROWS - 1; r >= 0; r--) {

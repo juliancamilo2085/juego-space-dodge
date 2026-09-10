@@ -1,4 +1,4 @@
-const CACHE_NAME = 'space-dodge-v1';
+const CACHE_NAME = 'space-dodge-v2';
 const urlsToCache = [
   '/',
   '/index.html',

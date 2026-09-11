@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Blue Strike: Football Match 3D Saga</title>
-  <link rel="manifest" href="manifest.json">
+  <!-- INVALIDADOR DE CACHÉ FORZADO -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Blue Strike: Football Match 3D Saga v200</title>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; touch-action: none; user-select: none; }
@@ -15,10 +18,10 @@
       height: 100vh; overflow: hidden; color: #fff;
     }
 
-    /* PANTALLA PRINCIPAL CON FONDO DE ESTADIO CONTINUO */
+    /* PANTALLA PRINCIPAL - ESTADIO NOCTURNO */
     .screen {
       position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: radial-gradient(circle at 50% 20%, #0044aa 0%, #001a40 60%, #000814 100%);
+      background: radial-gradient(circle at 50% 20%, #0044cc 0%, #001a40 60%, #000612 100%);
       display: flex; flex-direction: column; align-items: center; justify-content: space-between;
       padding: 20px 15px; z-index: 30; box-sizing: border-box;
     }
@@ -41,18 +44,25 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
 
-    /* LOGO DEL JUEGO */
-    .game-logo { font-size: 32px; text-align: center; line-height: 0.95; margin-top: 5px; }
+    .game-logo { font-size: 30px; text-align: center; line-height: 0.95; margin-top: 5px; }
     .logo-top { color: #ffffff; text-shadow: 0 5px 0 #002255, 0 10px 25px rgba(0, 136, 255, 0.8); display: block; letter-spacing: 2px; }
-    .logo-bottom { color: #00d4ff; text-shadow: 0 5px 0 #004488, 0 10px 25px rgba(0, 212, 255, 0.8); display: block; font-size: 26px; letter-spacing: 3px; }
+    .logo-bottom { color: #00d4ff; text-shadow: 0 5px 0 #004488, 0 10px 25px rgba(0, 212, 255, 0.8); display: block; font-size: 24px; letter-spacing: 3px; }
 
-    /* CONTENEDOR AVATAR CANVASES EN DOMINADAS FREESTYLE */
+    /* CONTENEDOR DEL AVATAR JUGADOR HD EN FREESTYLE */
     .hero-avatar-box {
-      width: 220px; height: 200px; margin: 5px 0;
+      width: 220px; height: 210px; margin: 5px 0;
       position: relative; display: flex; justify-content: center; align-items: center;
       filter: drop-shadow(0 10px 25px rgba(0, 212, 255, 0.6));
     }
-    canvas#heroCanvas { width: 100%; height: 100%; }
+    .hero-avatar-box img {
+      width: 100%; height: 100%; object-fit: contain;
+      animation: freestyleAnim 1.8s infinite ease-in-out;
+    }
+
+    @keyframes freestyleAnim {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-12px) rotate(2deg); }
+    }
 
     /* MAPA DE TORNEO INFINITO */
     .world-map-container {
@@ -78,7 +88,6 @@
       100% { box-shadow: 0 0 30px #00d4ff, 0 6px 0 #003399; }
     }
 
-    /* BOTONES */
     .btn-menu {
       width: 100%; max-width: 320px; padding: 16px; border-radius: 24px; border: 2px solid #ffffff;
       font-family: 'Fredoka One', cursive; font-size: 20px; color: #fff;
@@ -104,7 +113,7 @@
       border: 2px solid #00d4ff; max-width: 90%;
     }
 
-    /* TABLERO DE CANCHA DE CÉSPED */
+    /* TABLERO DE CANCHA DE CÉSPED SINTÉTICO */
     .board-container {
       flex: 1; display: flex; flex-direction: column;
       justify-content: center; align-items: center; width: 100%;
@@ -123,7 +132,7 @@
     }
     .cell.selected { transform: scale(1.18); background: rgba(0, 212, 255, 0.5); border: 2px solid #ffffff; }
     .cell.exploding { transform: scale(0); opacity: 0; transition: transform 0.25s, opacity 0.25s; }
-    .cell svg { width: 38px; height: 38px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
+    .cell img { width: 36px; height: 36px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
 
     .boosters-bar { display: flex; gap: 15px; margin: 10px 0 15px; }
     .booster-btn {
@@ -189,9 +198,9 @@
       <span class="logo-bottom">MATCH 3D SAGA ⚽</span>
     </div>
 
-    <!-- CANVAS DEL FUTBOLISTA HUMANO 3D EN DOMINADAS -->
+    <!-- AVATAR ILUSTRADO DEL FUTBOLISTA EN DOMINADAS FREESTYLE -->
     <div class="hero-avatar-box">
-      <canvas id="heroCanvas" width="220" height="200"></canvas>
+      <img src="https://img.icons8.com/3d-fluency/384/football-player.png" alt="Jugador de Fútbol Freestyle">
     </div>
 
     <!-- MAPA DE TORNEO INFINITO -->
@@ -257,174 +266,23 @@
   </div>
 
   <script>
-    // MOTOR CANVAS JUGADOR FREESTYLE
-    const heroCanvas = document.getElementById('heroCanvas');
-    const hCtx = heroCanvas.getContext('2d');
-    let animFrame = 0;
-
-    function renderHero() {
-      hCtx.clearRect(0, 0, heroCanvas.width, heroCanvas.height);
-      animFrame += 0.08;
-
-      const centerX = 110;
-      const bodyY = 85 + Math.sin(animFrame) * 4;
-      const ballY = 165 - Math.abs(Math.sin(animFrame * 2)) * 35;
-      const legAngle = Math.sin(animFrame * 2) * 0.3;
-
-      // Sombra Balón
-      hCtx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-      hCtx.beginPath();
-      hCtx.ellipse(centerX, 175, 18, 6, 0, 0, Math.PI * 2);
-      hCtx.fill();
-
-      // Pierna Izquierda
-      hCtx.strokeStyle = '#ffdbac';
-      hCtx.lineWidth = 12;
-      hCtx.lineCap = 'round';
-      hCtx.beginPath();
-      hCtx.moveTo(centerX - 15, bodyY + 35);
-      hCtx.lineTo(centerX - 18, bodyY + 68);
-      hCtx.stroke();
-
-      // Pierna Derecha
-      hCtx.beginPath();
-      hCtx.moveTo(centerX + 15, bodyY + 35);
-      hCtx.lineTo(centerX + 20 + Math.sin(legAngle) * 20, bodyY + 60 - Math.cos(legAngle) * 10);
-      hCtx.stroke();
-
-      // Guayos
-      hCtx.fillStyle = '#0088ff';
-      hCtx.beginPath();
-      hCtx.arc(centerX - 20, bodyY + 70, 7, 0, Math.PI * 2);
-      hCtx.arc(centerX + 22 + Math.sin(legAngle) * 20, bodyY + 62 - Math.cos(legAngle) * 10, 7, 0, Math.PI * 2);
-      hCtx.fill();
-
-      // Camiseta Azul
-      const gradShirt = hCtx.createLinearGradient(centerX - 30, bodyY, centerX + 30, bodyY + 40);
-      gradShirt.addColorStop(0, '#0055cc');
-      gradShirt.addColorStop(1, '#001a66');
-      hCtx.fillStyle = gradShirt;
-      hCtx.beginPath();
-      hCtx.roundRect(centerX - 28, bodyY, 56, 42, 10);
-      hCtx.fill();
-
-      // Franja Blanca Central
-      hCtx.fillStyle = '#ffffff';
-      hCtx.fillRect(centerX - 8, bodyY, 16, 42);
-
-      // Cabeza
-      hCtx.fillStyle = '#ffdbac';
-      hCtx.beginPath();
-      hCtx.arc(centerX, bodyY - 18, 22, 0, Math.PI * 2);
-      hCtx.fill();
-
-      // Cabello Azul
-      hCtx.fillStyle = '#00d4ff';
-      hCtx.beginPath();
-      hCtx.arc(centerX, bodyY - 24, 23, Math.PI, Math.PI * 2);
-      hCtx.fill();
-
-      // Visor
-      hCtx.fillStyle = '#000814';
-      hCtx.beginPath();
-      hCtx.roundRect(centerX - 16, bodyY - 22, 32, 12, 6);
-      hCtx.fill();
-      hCtx.fillStyle = '#00d4ff';
-      hCtx.beginPath();
-      hCtx.arc(centerX - 7, bodyY - 16, 3, 0, Math.PI * 2);
-      hCtx.arc(centerX + 7, bodyY - 16, 3, 0, Math.PI * 2);
-      hCtx.fill();
-
-      // Sonrisa
-      hCtx.strokeStyle = '#000000';
-      hCtx.lineWidth = 2.5;
-      hCtx.beginPath();
-      hCtx.arc(centerX, bodyY - 10, 8, 0.2, Math.PI - 0.2);
-      hCtx.stroke();
-
-      // Balón Pro
-      const ballGrad = hCtx.createRadialGradient(centerX - 5, ballY - 5, 2, centerX, ballY, 18);
-      ballGrad.addColorStop(0, '#ffffff');
-      ballGrad.addColorStop(0.7, '#cbd5e1');
-      ballGrad.addColorStop(1, '#003380');
-      hCtx.fillStyle = ballGrad;
-      hCtx.beginPath();
-      hCtx.arc(centerX, ballY, 18, 0, Math.PI * 2);
-      hCtx.fill();
-      hCtx.strokeStyle = '#001a40';
-      hCtx.lineWidth = 2;
-      hCtx.stroke();
-
-      hCtx.fillStyle = '#0044cc';
-      hCtx.beginPath();
-      hCtx.arc(centerX, ballY, 6, 0, Math.PI * 2);
-      hCtx.fill();
-
-      requestAnimationFrame(renderHero);
+    // ELIMINACIÓN AUTOMÁTICA DE REGISTROS DE CACHÉ
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        for (let r of registrations) r.unregister();
+      });
     }
 
-    renderHero();
-
-    // AUDIO WEB AUDIO API
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    let audioCtx = null;
-    let bgOsc = null, bgGain = null;
-    let settings = { sfx: true, bg: true, vib: true };
-
-    function initAudio() { if (!audioCtx) audioCtx = new AudioCtx(); }
-
-    function playSynthSound(type) {
-      if (!settings.sfx) return;
-      initAudio();
-
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain); gain.connect(audioCtx.destination);
-
-      if (type === 'match') {
-        osc.frequency.setValueAtTime(350, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(750, audioCtx.currentTime + 0.15);
-        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.15);
-      } else if (type === 'gol') {
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(220, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.45);
-        gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.45);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.45);
-      }
-    }
-
-    function toggleBgMusic() {
-      if (!settings.bg) {
-        if (bgOsc) { bgOsc.stop(); bgOsc = null; }
-        return;
-      }
-      initAudio();
-      if (bgOsc) return;
-
-      bgOsc = audioCtx.createOscillator();
-      bgGain = audioCtx.createGain();
-      bgOsc.type = 'sine';
-      bgOsc.frequency.setValueAtTime(180, audioCtx.currentTime);
-      bgGain.gain.setValueAtTime(0.04, audioCtx.currentTime);
-      bgOsc.connect(bgGain);
-      bgGain.connect(audioCtx.destination);
-      bgOsc.start();
-    }
-
-    function triggerVibration() {
-      if (settings.vib && navigator.vibrate) { navigator.vibrate(60); }
-    }
-
-    // FICHAS VECTORIALES HD 3D
+    // FICHAS TEMÁTICAS DE DEPORTE HD (IMÁGENES 3D HD)
     const ITEMS_3D = [
-      `<svg viewBox="0 0 100 100"><defs><radialGradient id="g0" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#0088ff"/><stop offset="100%" stop-color="#001144"/></radialGradient></defs><circle cx="50" cy="50" r="42" fill="url(#g0)" stroke="#ffffff" stroke-width="3"/><polygon points="50,25 65,35 60,52 40,52 35,35" fill="#ffffff" opacity="0.95"/></svg>`,
-      `<svg viewBox="0 0 100 100"><defs><radialGradient id="g1" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#003380"/></radialGradient></defs><path d="M50 12 L82 25 L82 58 C82 78, 50 90, 50 90 C50 90, 18 78, 18 58 L18 25 Z" fill="url(#g1)" stroke="#ffffff" stroke-width="3"/><circle cx="50" cy="48" r="12" fill="#ffffff"/></svg>`,
-      `<svg viewBox="0 0 100 100"><defs><radialGradient id="g2" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="60%" stop-color="#e6f2ff"/><stop offset="100%" stop-color="#0055aa"/></radialGradient></defs><rect x="15" y="25" width="70" height="50" rx="18" fill="url(#g2)" stroke="#ffffff" stroke-width="3"/><path d="M25 65 L35 78 M50 65 L60 78 M75 65 L85 78" stroke="#00d4ff" stroke-width="4" stroke-linecap="round"/></svg>`,
-      `<svg viewBox="0 0 100 100"><defs><radialGradient id="g3" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#fffbeb"/><stop offset="50%" stop-color="#facc15"/><stop offset="100%" stop-color="#854d0e"/></radialGradient></defs><path d="M25 20 L75 20 L68 55 C68 68, 32 68, 32 55 Z" fill="url(#g3)" stroke="#ffffff" stroke-width="3"/><rect x="42" y="68" width="16" height="15" fill="#facc15"/><rect x="30" y="83" width="40" height="10" rx="3" fill="#854d0e"/></svg>`
+      // 0: Balón Pro 3D HD
+      `https://img.icons8.com/3d-fluency/94/soccer-ball.png`,
+      // 1: Escudo Deportivo HD
+      `https://img.icons8.com/3d-fluency/94/shield.png`,
+      // 2: Guayo / Botín Deportivo HD
+      `https://img.icons8.com/3d-fluency/94/running-shoe.png`,
+      // 3: Trofeo / Copa de Oro HD
+      `https://img.icons8.com/3d-fluency/94/trophy.png`
     ];
 
     const ROWS = 7, COLS = 7;
@@ -439,6 +297,7 @@
     let score = 0, goalScore = 300, moves = 20;
     let isProcessing = false;
 
+    // GENERACIÓN INFINITA DE NIVELES EN MAPA
     function renderMapNodes() {
       const container = document.getElementById('nodesContainer');
       if (!container) return;
@@ -465,7 +324,6 @@
       settings[key] = !settings[key];
       const el = document.getElementById(`toggle${key.charAt(0).toUpperCase() + key.slice(1)}`);
       if (settings[key]) el.classList.add('on'); else el.classList.remove('on');
-      if (key === 'bg') toggleBgMusic();
     }
 
     function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
@@ -480,8 +338,6 @@
       activeLevel = lvlNum;
       score = 0; moves = 20; goalScore = 250 + (lvlNum * 90);
       isProcessing = false; selectedCell = null;
-
-      toggleBgMusic();
 
       document.getElementById('mapScreen').style.display = 'none';
       document.getElementById('hud').style.display = 'flex';
@@ -518,7 +374,9 @@
           cell.className = 'cell';
           cell.dataset.r = r; cell.dataset.c = c;
           if (selectedCell && selectedCell.r === r && selectedCell.c === c) cell.classList.add('selected');
-          if (board[r][c] !== null) cell.innerHTML = ITEMS_3D[board[r][c]];
+          if (board[r][c] !== null) {
+            cell.innerHTML = `<img src="${ITEMS_3D[board[r][c]]}" alt="Ficha">`;
+          }
           cell.onclick = () => onCellClick(r, c);
           grid.appendChild(cell);
         }
@@ -590,9 +448,6 @@
 
         if (combo > 1 || matches.length >= 4) {
           triggerGolPopup();
-        } else {
-          playSynthSound('match');
-          triggerVibration();
         }
 
         matches.forEach(({ r, c }) => {
@@ -631,8 +486,6 @@
     }
 
     function triggerGolPopup() {
-      playSynthSound('gol');
-      triggerVibration();
       const pop = document.getElementById('goalPopup');
       pop.classList.add('active');
       setTimeout(() => pop.classList.remove('active'), 600);

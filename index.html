@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>Blue Strike: Football Match 3D Saga</title>
+  <title>Blue Strike: Football Match 3D Saga v999</title>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; touch-action: none; user-select: none; }
@@ -17,7 +17,6 @@
       height: 100vh; overflow: hidden; color: #fff;
     }
 
-    /* PANTALLA PRINCIPAL ESTADIO ISOMÉTRICO */
     .screen {
       position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
       background: radial-gradient(circle at 50% 20%, #0044aa 0%, #001a40 60%, #000612 100%);
@@ -25,7 +24,6 @@
       padding: 20px 15px; z-index: 30; box-sizing: border-box;
     }
 
-    /* OVERLAY ACTIVACIÓN AUDIO */
     .audio-unlock-overlay {
       position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
       background: radial-gradient(circle at center, #003380 0%, #000814 100%);
@@ -33,7 +31,6 @@
       justify-content: center; align-items: center; text-align: center; padding: 25px;
     }
 
-    /* NAV SUPERIOR */
     .top-navbar {
       width: 100%; max-width: 420px; display: flex;
       justify-content: space-between; align-items: center; z-index: 35;
@@ -51,12 +48,10 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
 
-    /* LOGO */
     .game-logo { font-size: 32px; text-align: center; line-height: 0.95; margin-top: 5px; }
     .logo-top { color: #ffffff; text-shadow: 0 5px 0 #002255, 0 10px 25px rgba(0, 136, 255, 0.8); display: block; letter-spacing: 2px; }
     .logo-bottom { color: #00d4ff; text-shadow: 0 5px 0 #004488, 0 10px 25px rgba(0, 212, 255, 0.8); display: block; font-size: 26px; letter-spacing: 3px; }
 
-    /* AVATAR FUTBOLISTA JOVEN EN FREESTYLE */
     .hero-avatar-box {
       width: 200px; height: 180px; margin: 5px 0;
       position: relative; display: flex; justify-content: center; align-items: center;
@@ -72,7 +67,6 @@
       50% { transform: translateY(-12px) rotate(2deg); }
     }
 
-    /* BANNERS EVENTOS Y RECOMPENSAS (ESTILO BUS JAM) */
     .events-bar {
       display: flex; gap: 12px; width: 100%; max-width: 380px; justify-content: center;
     }
@@ -85,7 +79,6 @@
     .event-card span { font-size: 12px; font-family: 'Nunito'; font-weight: 900; color: #94a3b8; }
     .event-card strong { font-size: 14px; color: #00d4ff; }
 
-    /* MAPA DE TORNEO INFINITO */
     .world-map-container {
       flex: 1; width: 100%; max-width: 380px; margin: 10px 0;
       overflow-y: auto; display: flex; flex-direction: column-reverse;
@@ -109,7 +102,6 @@
       100% { box-shadow: 0 0 30px #00d4ff, 0 6px 0 #003399; }
     }
 
-    /* BOTONES INTERACTIVOS BRILLANTES */
     .btn-menu {
       width: 100%; max-width: 320px; padding: 16px; border-radius: 24px; border: 2px solid #ffffff;
       font-family: 'Fredoka One', cursive; font-size: 20px; color: #fff;
@@ -119,7 +111,6 @@
     }
     .btn-menu:active { transform: translateY(4px); }
 
-    /* PANTALLA DE CARGA (LOADING SCREEN) */
     .loading-screen {
       position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
       background: radial-gradient(circle at center, #002266 0%, #000814 100%);
@@ -135,7 +126,6 @@
       border-radius: 8px; transition: width 1.2s ease-in-out;
     }
 
-    /* WARNING PARTIDO DIFÍCIL */
     .hard-level-banner {
       background: linear-gradient(90deg, #dc2626, #ef4444); color: #fff;
       padding: 8px 20px; border-radius: 12px; border: 2px solid #fff;
@@ -147,7 +137,6 @@
       100% { box-shadow: 0 0 25px #ef4444; }
     }
 
-    /* HUD EN JUEGO */
     .game-hud {
       width: 100%; max-width: 420px; padding: 10px 14px; display: flex;
       justify-content: space-between; align-items: center;
@@ -163,7 +152,6 @@
       border: 2px solid #00d4ff; max-width: 90%;
     }
 
-    /* TABLERO DE CANCHA ISOMÉTRICO */
     .board-container {
       flex: 1; display: flex; flex-direction: column;
       justify-content: center; align-items: center; width: 100%;
@@ -201,7 +189,6 @@
     }
     .goal-popup.active { transform: translate(-50%, -50%) scale(1.3); }
 
-    /* MODALES DE RESULTADO Y RECOMPENSAS */
     .modal {
       position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(0, 13, 32, 0.92); backdrop-filter: blur(10px);
@@ -234,7 +221,6 @@
 </head>
 <body>
 
-  <!-- DESBLOQUEO AUDIO Y VIBRACIÓN -->
   <div class="audio-unlock-overlay" id="audioOverlay">
     <div class="game-logo" style="margin-bottom:25px;">
       <span class="logo-top">BLUE STRIKE</span>
@@ -245,7 +231,6 @@
 
   <div class="goal-popup" id="goalPopup">¡GOOOOL!</div>
 
-  <!-- PANTALLA DE CARGA (LOADING SCREEN) -->
   <div class="loading-screen" id="loadingScreen" style="display: none;">
     <div class="game-logo">
       <span class="logo-top">CARGANDO PARTIDO...</span>
@@ -255,7 +240,6 @@
     </div>
   </div>
 
-  <!-- PORTADA PRINCIPAL -->
   <div class="screen" id="mapScreen">
     <div class="top-navbar">
       <div class="hud-pill">❤️ <span id="livesCount">5</span></div>
@@ -268,7 +252,6 @@
       <span class="logo-bottom">MATCH 3D SAGA ⚽</span>
     </div>
 
-    <!-- AVATAR ILUSTRADO FUTBOLISTA JOVEN EN FREESTYLE -->
     <div class="hero-avatar-box">
       <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -296,7 +279,6 @@
       </svg>
     </div>
 
-    <!-- EVENTOS ESPECIALES (DAILY REWARD & GALACTIC CHALLENGE) -->
     <div class="events-bar">
       <div class="event-card" onclick="openDailyReward()">
         <span>RECOMPENSA</span>
@@ -308,20 +290,17 @@
       </div>
     </div>
 
-    <!-- MAPA DE TORNEO INFINITO -->
     <div class="world-map-container" id="nodesContainer"></div>
 
     <button class="btn-menu" id="startBtn">⚽ ¡JUGAR PARTIDO!</button>
   </div>
 
-  <!-- HUD EN JUEGO -->
   <div class="game-hud" id="hud" style="display: none;">
     <div class="hud-pill" style="border-color:#00d4ff;">🏆 <span id="lvlText">1</span></div>
     <div class="hud-pill">⭐ <span id="scoreText">0</span>/<span id="goalText">600</span></div>
     <div class="hud-pill" style="color:#0088ff;">🔄 <span id="movesText">18</span></div>
   </div>
 
-  <!-- TABLERO PRINCIPAL -->
   <div class="board-container" id="gameBoard" style="display: none;">
     <div class="hard-level-banner" id="hardBanner" style="display: none;">🔥 PARTIDO DIFÍCIL</div>
     <div class="speech-bubble">¡Alinea 3 o más elementos iguales para avanzar en el Torneo!</div>
@@ -334,7 +313,6 @@
     </div>
   </div>
 
-  <!-- MODAL RECOMPENSA DIARIA -->
   <div class="modal" id="dailyModal" style="display: none;">
     <div class="modal-card">
       <h2 style="color: #0088ff;">🎁 RECOMPENSA DIARIA</h2>
@@ -343,7 +321,6 @@
     </div>
   </div>
 
-  <!-- MODAL DESAFÍO COPA -->
   <div class="modal" id="galacticModal" style="display: none;">
     <div class="modal-card">
       <h2 style="color: #003380;">⚡ COPA INTERNACIONAL</h2>
@@ -352,7 +329,6 @@
     </div>
   </div>
 
-  <!-- CONFIGURACIÓN -->
   <div class="modal" id="settingsModal" style="display: none;">
     <div class="modal-card">
       <h2 style="color: #003380;">⚙️ CONFIGURACIÓN</h2>
@@ -372,7 +348,6 @@
     </div>
   </div>
 
-  <!-- MODALES DE RESULTADOS -->
   <div class="modal" id="winModal" style="display: none;">
     <div class="modal-card">
       <h2 style="color: #0088ff;">🎉 ¡GOLAZO Y VICTORIA!</h2>
@@ -390,7 +365,10 @@
   </div>
 
   <script>
-    // AUDIO Y VIBRACIÓN (WEB AUDIO API)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(r => r.forEach(reg => reg.unregister()));
+    }
+
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
     let bgOsc = null, bgGain = null;
@@ -456,17 +434,11 @@
       }
     }
 
-    // 5 FICHAS TEMÁTICAS VECTORIALES HD
     const ITEMS_3D = [
-      // 0: Balón Pro 3D HD
       `<svg viewBox="0 0 100 100"><defs><radialGradient id="g0" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#0088ff"/><stop offset="100%" stop-color="#001144"/></radialGradient></defs><circle cx="50" cy="50" r="42" fill="url(#g0)" stroke="#ffffff" stroke-width="3"/><polygon points="50,25 65,35 60,52 40,52 35,35" fill="#ffffff" opacity="0.95"/></svg>`,
-      // 1: Escudo Emblemático HD
       `<svg viewBox="0 0 100 100"><defs><radialGradient id="g1" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#003380"/></radialGradient></defs><path d="M50 12 L82 25 L82 58 C82 78, 50 90, 50 90 C50 90, 18 78, 18 58 L18 25 Z" fill="url(#g1)" stroke="#ffffff" stroke-width="3"/><circle cx="50" cy="48" r="12" fill="#ffffff"/></svg>`,
-      // 2: Guayo / Botín Deportivo HD
       `<svg viewBox="0 0 100 100"><defs><radialGradient id="g2" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="60%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#003380"/></radialGradient></defs><path d="M15 40 Q25 20 50 25 Q75 30 85 50 Q90 65 75 70 L20 70 Q10 60 15 40 Z" fill="url(#g2)" stroke="#ffffff" stroke-width="3"/><circle cx="30" cy="74" r="3" fill="#ffffff"/><circle cx="50" cy="74" r="3" fill="#ffffff"/><circle cx="70" cy="74" r="3" fill="#ffffff"/></svg>`,
-      // 3: Trofeo Dorado 3D HD
       `<svg viewBox="0 0 100 100"><defs><radialGradient id="g3" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#fffbeb"/><stop offset="50%" stop-color="#facc15"/><stop offset="100%" stop-color="#854d0e"/></radialGradient></defs><path d="M25 20 L75 20 L68 55 C68 68, 32 68, 32 55 Z" fill="url(#g3)" stroke="#ffffff" stroke-width="3"/><rect x="42" y="68" width="16" height="15" fill="#facc15"/><rect x="30" y="83" width="40" height="10" rx="3" fill="#854d0e"/></svg>`,
-      // 4: Tarjeta Arbitral HD
       `<svg viewBox="0 0 100 100"><defs><radialGradient id="g4" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#fef08a"/><stop offset="60%" stop-color="#eab308"/><stop offset="100%" stop-color="#713f12"/></radialGradient></defs><rect x="22" y="15" width="56" height="70" rx="10" fill="url(#g4)" stroke="#ffffff" stroke-width="3"/></svg>`
     ];
 
@@ -528,7 +500,6 @@
       if (lives <= 0) { alert("¡Sin Vidas! Espera a que se recarguen."); return; }
       activeLevel = lvlNum;
 
-      // MOSTRAR PANTALLA DE CARGA (LOADING)
       const loadingScreen = document.getElementById('loadingScreen');
       const loadingFill = document.getElementById('loadingFill');
       loadingScreen.style.display = 'flex';
@@ -539,7 +510,6 @@
       setTimeout(() => {
         loadingScreen.style.display = 'none';
 
-        // BALANCE DIFICULTAD
         score = 0;
         moves = Math.max(14, 20 - Math.floor(lvlNum / 3));
         goalScore = 500 + (lvlNum * 150);
@@ -551,7 +521,6 @@
         document.getElementById('hud').style.display = 'flex';
         document.getElementById('gameBoard').style.display = 'flex';
 
-        // CARTEL PARTIDO DIFÍCIL
         const hardBanner = document.getElementById('hardBanner');
         if (lvlNum % 3 === 0) hardBanner.style.display = 'block';
         else hardBanner.style.display = 'none';

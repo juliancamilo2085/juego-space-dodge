@@ -3,10 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-  <title>Blue Strike: Football Match 3D Saga v30</title>
+  <title>Blue Strike: Football Match 3D Saga</title>
   <link rel="manifest" href="manifest.json">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
   <style>
@@ -18,23 +15,15 @@
       height: 100vh; overflow: hidden; color: #fff;
     }
 
-    /* PANTALLA PRINCIPAL - ESTADIO NOCTURNO CONTINUO */
+    /* PANTALLA PRINCIPAL CON FONDO DE ESTADIO CONTINUO */
     .screen {
       position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: radial-gradient(circle at 50% 20%, #0044cc 0%, #001a40 60%, #000612 100%);
+      background: radial-gradient(circle at 50% 20%, #0044aa 0%, #001a40 60%, #000814 100%);
       display: flex; flex-direction: column; align-items: center; justify-content: space-between;
       padding: 20px 15px; z-index: 30; box-sizing: border-box;
     }
 
-    /* OVERLAY INICIAL PARA ACTIVAR AUDIO */
-    .audio-unlock-overlay {
-      position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: radial-gradient(circle at center, #003380 0%, #000814 100%);
-      z-index: 100; display: flex; flex-direction: column;
-      justify-content: center; align-items: center; text-align: center; padding: 25px;
-    }
-
-    /* NAV SUPERIOR */
+    /* BARRA SUPERIOR NAV */
     .top-navbar {
       width: 100%; max-width: 420px; display: flex;
       justify-content: space-between; align-items: center; z-index: 35;
@@ -52,20 +41,18 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
 
-    /* LOGO Y MARCA */
+    /* LOGO DEL JUEGO */
     .game-logo { font-size: 32px; text-align: center; line-height: 0.95; margin-top: 5px; }
     .logo-top { color: #ffffff; text-shadow: 0 5px 0 #002255, 0 10px 25px rgba(0, 136, 255, 0.8); display: block; letter-spacing: 2px; }
     .logo-bottom { color: #00d4ff; text-shadow: 0 5px 0 #004488, 0 10px 25px rgba(0, 212, 255, 0.8); display: block; font-size: 26px; letter-spacing: 3px; }
 
-    /* CONTENEDOR AVATAR 3D CANVAS (JUGADOR REAL EN DOMINADAS) */
+    /* CONTENEDOR AVATAR CANVASES EN DOMINADAS FREESTYLE */
     .hero-avatar-box {
       width: 220px; height: 200px; margin: 5px 0;
       position: relative; display: flex; justify-content: center; align-items: center;
       filter: drop-shadow(0 10px 25px rgba(0, 212, 255, 0.6));
     }
-    canvas#heroCanvas {
-      width: 100%; height: 100%;
-    }
+    canvas#heroCanvas { width: 100%; height: 100%; }
 
     /* MAPA DE TORNEO INFINITO */
     .world-map-container {
@@ -187,18 +174,9 @@
 </head>
 <body>
 
-  <!-- UNLOCK AUDIO -->
-  <div class="audio-unlock-overlay" id="audioOverlay">
-    <div class="game-logo" style="margin-bottom:25px;">
-      <span class="logo-top">BLUE STRIKE</span>
-      <span class="logo-bottom">MATCH 3D SAGA ⚽</span>
-    </div>
-    <button class="btn-menu" style="font-size:24px;" onclick="unlockAudioAndStart()">⚽ TOCAR PARA ENTRAR</button>
-  </div>
-
   <div class="goal-popup" id="goalPopup">¡GOOOOL!</div>
 
-  <!-- PORTADA CON JUGADOR EN FREESTYLE Y MAPA DE TORNEO -->
+  <!-- PORTADA PRINCIPAL -->
   <div class="screen" id="mapScreen">
     <div class="top-navbar">
       <div class="hud-pill">❤️ <span id="livesCount">5</span></div>
@@ -279,16 +257,7 @@
   </div>
 
   <script>
-    // DESTRUCCIÓN DE CACHÉ ANTERIOR
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(function(registrations) {
-        for(let registration of registrations) {
-          registration.unregister();
-        }
-      });
-    }
-
-    // MOTOR RENDER CANVAS DEL JUGADOR JOVEN (DOMINADAS / FREESTYLE)
+    // MOTOR CANVAS JUGADOR FREESTYLE
     const heroCanvas = document.getElementById('heroCanvas');
     const hCtx = heroCanvas.getContext('2d');
     let animFrame = 0;
@@ -302,7 +271,7 @@
       const ballY = 165 - Math.abs(Math.sin(animFrame * 2)) * 35;
       const legAngle = Math.sin(animFrame * 2) * 0.3;
 
-      // Sombra del Balón
+      // Sombra Balón
       hCtx.fillStyle = 'rgba(0, 0, 0, 0.3)';
       hCtx.beginPath();
       hCtx.ellipse(centerX, 175, 18, 6, 0, 0, Math.PI * 2);
@@ -317,20 +286,20 @@
       hCtx.lineTo(centerX - 18, bodyY + 68);
       hCtx.stroke();
 
-      // Pierna Derecha (Pateando en Dominada)
+      // Pierna Derecha
       hCtx.beginPath();
       hCtx.moveTo(centerX + 15, bodyY + 35);
       hCtx.lineTo(centerX + 20 + Math.sin(legAngle) * 20, bodyY + 60 - Math.cos(legAngle) * 10);
       hCtx.stroke();
 
-      // Guayos Azules
+      // Guayos
       hCtx.fillStyle = '#0088ff';
       hCtx.beginPath();
       hCtx.arc(centerX - 20, bodyY + 70, 7, 0, Math.PI * 2);
       hCtx.arc(centerX + 22 + Math.sin(legAngle) * 20, bodyY + 62 - Math.cos(legAngle) * 10, 7, 0, Math.PI * 2);
       hCtx.fill();
 
-      // Camiseta Azul Real y Blanca
+      // Camiseta Azul
       const gradShirt = hCtx.createLinearGradient(centerX - 30, bodyY, centerX + 30, bodyY + 40);
       gradShirt.addColorStop(0, '#0055cc');
       gradShirt.addColorStop(1, '#001a66');
@@ -343,19 +312,19 @@
       hCtx.fillStyle = '#ffffff';
       hCtx.fillRect(centerX - 8, bodyY, 16, 42);
 
-      // Cabeza / Rostro Joven
+      // Cabeza
       hCtx.fillStyle = '#ffdbac';
       hCtx.beginPath();
       hCtx.arc(centerX, bodyY - 18, 22, 0, Math.PI * 2);
       hCtx.fill();
 
-      // Cabello Deportivo Azul Cyan
+      // Cabello Azul
       hCtx.fillStyle = '#00d4ff';
       hCtx.beginPath();
       hCtx.arc(centerX, bodyY - 24, 23, Math.PI, Math.PI * 2);
       hCtx.fill();
 
-      // Gafas/Visor Cyber
+      // Visor
       hCtx.fillStyle = '#000814';
       hCtx.beginPath();
       hCtx.roundRect(centerX - 16, bodyY - 22, 32, 12, 6);
@@ -373,7 +342,7 @@
       hCtx.arc(centerX, bodyY - 10, 8, 0.2, Math.PI - 0.2);
       hCtx.stroke();
 
-      // Balón 3D Pro en Movimiento
+      // Balón Pro
       const ballGrad = hCtx.createRadialGradient(centerX - 5, ballY - 5, 2, centerX, ballY, 18);
       ballGrad.addColorStop(0, '#ffffff');
       ballGrad.addColorStop(0.7, '#cbd5e1');
@@ -386,7 +355,6 @@
       hCtx.lineWidth = 2;
       hCtx.stroke();
 
-      // Detalle Hexagonal Balón
       hCtx.fillStyle = '#0044cc';
       hCtx.beginPath();
       hCtx.arc(centerX, ballY, 6, 0, Math.PI * 2);
@@ -395,22 +363,19 @@
       requestAnimationFrame(renderHero);
     }
 
+    renderHero();
+
     // AUDIO WEB AUDIO API
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
     let bgOsc = null, bgGain = null;
     let settings = { sfx: true, bg: true, vib: true };
 
-    function unlockAudioAndStart() {
-      if (!audioCtx) audioCtx = new AudioCtx();
-      document.getElementById('audioOverlay').style.display = 'none';
-      renderHero();
-      renderMapNodes();
-      toggleBgMusic();
-    }
+    function initAudio() { if (!audioCtx) audioCtx = new AudioCtx(); }
 
     function playSynthSound(type) {
-      if (!settings.sfx || !audioCtx) return;
+      if (!settings.sfx) return;
+      initAudio();
 
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
@@ -437,7 +402,8 @@
         if (bgOsc) { bgOsc.stop(); bgOsc = null; }
         return;
       }
-      if (!audioCtx || bgOsc) return;
+      initAudio();
+      if (bgOsc) return;
 
       bgOsc = audioCtx.createOscillator();
       bgGain = audioCtx.createGain();
@@ -455,13 +421,9 @@
 
     // FICHAS VECTORIALES HD 3D
     const ITEMS_3D = [
-      // 0: Balón Pro 3D
       `<svg viewBox="0 0 100 100"><defs><radialGradient id="g0" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#0088ff"/><stop offset="100%" stop-color="#001144"/></radialGradient></defs><circle cx="50" cy="50" r="42" fill="url(#g0)" stroke="#ffffff" stroke-width="3"/><polygon points="50,25 65,35 60,52 40,52 35,35" fill="#ffffff" opacity="0.95"/></svg>`,
-      // 1: Escudo Emblemático
       `<svg viewBox="0 0 100 100"><defs><radialGradient id="g1" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#003380"/></radialGradient></defs><path d="M50 12 L82 25 L82 58 C82 78, 50 90, 50 90 C50 90, 18 78, 18 58 L18 25 Z" fill="url(#g1)" stroke="#ffffff" stroke-width="3"/><circle cx="50" cy="48" r="12" fill="#ffffff"/></svg>`,
-      // 2: Botín / Guayo Deportivo
       `<svg viewBox="0 0 100 100"><defs><radialGradient id="g2" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="60%" stop-color="#e6f2ff"/><stop offset="100%" stop-color="#0055aa"/></radialGradient></defs><rect x="15" y="25" width="70" height="50" rx="18" fill="url(#g2)" stroke="#ffffff" stroke-width="3"/><path d="M25 65 L35 78 M50 65 L60 78 M75 65 L85 78" stroke="#00d4ff" stroke-width="4" stroke-linecap="round"/></svg>`,
-      // 3: Trofeo Dorado 3D
       `<svg viewBox="0 0 100 100"><defs><radialGradient id="g3" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#fffbeb"/><stop offset="50%" stop-color="#facc15"/><stop offset="100%" stop-color="#854d0e"/></radialGradient></defs><path d="M25 20 L75 20 L68 55 C68 68, 32 68, 32 55 Z" fill="url(#g3)" stroke="#ffffff" stroke-width="3"/><rect x="42" y="68" width="16" height="15" fill="#facc15"/><rect x="30" y="83" width="40" height="10" rx="3" fill="#854d0e"/></svg>`
     ];
 
@@ -477,7 +439,6 @@
     let score = 0, goalScore = 300, moves = 20;
     let isProcessing = false;
 
-    // GENERACIÓN INFINITA DE NIVELES EN MAPA
     function renderMapNodes() {
       const container = document.getElementById('nodesContainer');
       if (!container) return;
@@ -519,6 +480,8 @@
       activeLevel = lvlNum;
       score = 0; moves = 20; goalScore = 250 + (lvlNum * 90);
       isProcessing = false; selectedCell = null;
+
+      toggleBgMusic();
 
       document.getElementById('mapScreen').style.display = 'none';
       document.getElementById('hud').style.display = 'flex';
@@ -715,6 +678,8 @@
 
       renderMapNodes();
     }
+
+    renderMapNodes();
   </script>
 </body>
 </html>

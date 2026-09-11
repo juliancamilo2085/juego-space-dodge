@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Blue Strike: Football Match 3D Saga</title>
+  <title>Blue Strike: Match 3D Saga</title>
   <link rel="manifest" href="manifest.json">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <style>
     * { box-sizing: border-box; touch-action: none; user-select: none; }
     body {
@@ -16,21 +15,23 @@
       height: 100vh; overflow: hidden; color: #fff;
     }
 
-    /* PANTALLA DE INICIO Y COBERTURA DE AUDIO */
+    /* PANTALLA PRINCIPAL CON FONDO DE ESTADIO ILUMINADO */
+    .screen {
+      position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: radial-gradient(circle at 50% 20%, #0044aa 0%, #001a40 60%, #000814 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+      padding: 20px 15px; z-index: 30; box-sizing: border-box;
+    }
+
+    /* OVERLAY INICIAL PARA UNLOCK DE AUDIO */
     .audio-unlock-overlay {
       position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: radial-gradient(circle at center, #002b66 0%, #000814 100%);
+      background: radial-gradient(circle at center, #003380 0%, #000814 100%);
       z-index: 100; display: flex; flex-direction: column;
       justify-content: center; align-items: center; text-align: center; padding: 25px;
     }
 
-    .screen {
-      position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: radial-gradient(circle at center, #002b66 0%, #000814 100%);
-      display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-      padding: 20px; z-index: 30; box-sizing: border-box;
-    }
-
+    /* BARRA SUPERIOR */
     .top-navbar {
       width: 100%; max-width: 420px; display: flex;
       justify-content: space-between; align-items: center; z-index: 35;
@@ -48,25 +49,35 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
 
+    /* LOGO DEL JUEGO */
     .game-logo { font-size: 32px; text-align: center; line-height: 0.95; margin-top: 5px; }
     .logo-top { color: #ffffff; text-shadow: 0 5px 0 #002255, 0 10px 25px rgba(0, 136, 255, 0.8); display: block; letter-spacing: 2px; }
     .logo-bottom { color: #00d4ff; text-shadow: 0 5px 0 #004488, 0 10px 25px rgba(0, 212, 255, 0.8); display: block; font-size: 26px; letter-spacing: 3px; }
 
-    /* CONTENEDOR THREE.JS PERSONAJE 3D HUMANO */
-    #hero3d-container {
-      width: 100%; max-width: 340px; height: 210px; margin: 5px 0;
-      border-radius: 24px; border: 2px solid #00d4ff;
-      box-shadow: 0 0 30px rgba(0, 212, 255, 0.5); overflow: hidden;
-      background: radial-gradient(circle at center, #003380 0%, #000a1a 100%);
+    /* CONTENEDOR DEL JUGADOR JOVEN 3D HD (ANIMACIÓN FREESTYLE SIN CAJA NEGRA) */
+    .hero-avatar-box {
+      width: 180px; height: 180px; margin: 5px 0;
+      position: relative; display: flex; justify-content: center; align-items: center;
+      filter: drop-shadow(0 10px 20px rgba(0, 212, 255, 0.6));
     }
 
-    /* MAPA DE TORNEO INFINITO */
+    .hero-avatar-box svg {
+      width: 100%; height: 100%;
+      animation: freestyleAnim 1.8s infinite ease-in-out;
+    }
+
+    @keyframes freestyleAnim {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-12px) rotate(2deg); }
+    }
+
+    /* MAPA DE TORNEO DE NIVELES INFINITOS */
     .world-map-container {
       flex: 1; width: 100%; max-width: 380px; margin: 10px 0;
       overflow-y: auto; display: flex; flex-direction: column-reverse;
-      align-items: center; gap: 18px; padding: 15px 10px;
+      align-items: center; gap: 16px; padding: 15px 10px;
       background: rgba(0, 20, 50, 0.5); border-radius: 20px;
-      border: 2px solid rgba(0, 212, 255, 0.3);
+      border: 2px solid rgba(0, 212, 255, 0.3); backdrop-filter: blur(8px);
     }
     .map-node {
       width: 60px; height: 60px; border-radius: 50%; background: #0088ff;
@@ -84,6 +95,7 @@
       100% { box-shadow: 0 0 30px #00d4ff, 0 6px 0 #003399; }
     }
 
+    /* BOTONES INTERACTIVOS */
     .btn-menu {
       width: 100%; max-width: 320px; padding: 16px; border-radius: 24px; border: 2px solid #ffffff;
       font-family: 'Fredoka One', cursive; font-size: 20px; color: #fff;
@@ -109,26 +121,28 @@
       border: 2px solid #00d4ff; max-width: 90%;
     }
 
-    /* TABLERO */
+    /* TABLERO DE CANCHA EN 3D CON CÉSPED SINTÉTICO */
     .board-container {
       flex: 1; display: flex; flex-direction: column;
       justify-content: center; align-items: center; width: 100%;
     }
     .grid-board {
       display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;
-      background: rgba(0, 20, 50, 0.85); padding: 10px; border-radius: 24px;
-      backdrop-filter: blur(10px); border: 3px solid #00d4ff;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 25px rgba(0,212,255,0.3);
+      background: radial-gradient(circle, #0f5132 0%, #052e16 100%);
+      padding: 12px; border-radius: 24px;
+      border: 3px solid #00d4ff;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.7), 0 0 30px rgba(0,212,255,0.4);
     }
     .cell {
-      width: 44px; height: 44px; background: rgba(255, 255, 255, 0.08);
+      width: 44px; height: 44px; background: rgba(255, 255, 255, 0.12);
       border-radius: 12px; display: flex; justify-content: center; align-items: center;
       cursor: pointer; transition: transform 0.15s, background-color 0.15s;
     }
-    .cell.selected { transform: scale(1.18); background: rgba(0, 212, 255, 0.4); border: 2px solid #ffffff; }
+    .cell.selected { transform: scale(1.18); background: rgba(0, 212, 255, 0.5); border: 2px solid #ffffff; }
     .cell.exploding { transform: scale(0); opacity: 0; transition: transform 0.25s, opacity 0.25s; }
-    .cell svg { width: 38px; height: 38px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
+    .cell svg { width: 38px; height: 38px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
 
+    /* POTENCIADORES BARRAS INFERIORES */
     .boosters-bar { display: flex; gap: 15px; margin: 10px 0 15px; }
     .booster-btn {
       background: #003380; border: 2px solid #00d4ff; border-radius: 18px;
@@ -138,6 +152,7 @@
     }
     .booster-btn:active { transform: translateY(3px); }
 
+    /* TEXTO ANIMADO CELEBRACIÓN GOL */
     .goal-popup {
       position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) scale(0);
       font-size: 48px; font-family: 'Fredoka One'; color: #00f0ff;
@@ -146,6 +161,7 @@
     }
     .goal-popup.active { transform: translate(-50%, -50%) scale(1.3); }
 
+    /* MODALES DE RESULTADO Y CONFIGURACIÓN */
     .modal {
       position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(0, 13, 32, 0.92); backdrop-filter: blur(10px);
@@ -178,7 +194,7 @@
 </head>
 <body>
 
-  <!-- PANTALLA INICIAL DESBLOQUEO AUDIO -->
+  <!-- PANTALLA UNLOCK AUDIO -->
   <div class="audio-unlock-overlay" id="audioOverlay">
     <div class="game-logo" style="margin-bottom:25px;">
       <span class="logo-top">BLUE STRIKE</span>
@@ -189,7 +205,7 @@
 
   <div class="goal-popup" id="goalPopup">¡GOOOOL!</div>
 
-  <!-- PORTADA CON PERSONAJE HUMANO 3D Y MAPA DE TORNEO -->
+  <!-- PORTADA PRINCIPAL CON JUGADOR HD Y MAPA -->
   <div class="screen" id="mapScreen">
     <div class="top-navbar">
       <div class="hud-pill">❤️ <span id="livesCount">5</span></div>
@@ -202,9 +218,41 @@
       <span class="logo-bottom">MATCH 3D SAGA ⚽</span>
     </div>
 
-    <!-- RENDER 3D HUMANO EN THREE.JS -->
-    <div id="hero3d-container"></div>
+    <!-- AVATAR ILUSTRADO HD DEL FUTBOLISTA JOVEN EN FREESTYLE -->
+    <div class="hero-avatar-box">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="shirtGrad" cx="30%" cy="30%" r="70%">
+            <stop offset="0%" stop-color="#00d4ff"/>
+            <stop offset="50%" stop-color="#0044cc"/>
+            <stop offset="100%" stop-color="#001144"/>
+          </radialGradient>
+          <radialGradient id="ballGrad" cx="30%" cy="30%" r="70%">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="70%" stop-color="#cbd5e1"/>
+            <stop offset="100%" stop-color="#64748b"/>
+          </radialGradient>
+        </defs>
+        <!-- Cuerpo y Uniforme Azul y Blanco -->
+        <path d="M55,95 L145,95 L135,160 L65,160 Z" fill="url(#shirtGrad)" stroke="#ffffff" stroke-width="3.5"/>
+        <rect x="88" y="95" width="24" height="65" fill="#ffffff"/>
+        <!-- Cabeza y Rostro Joven -->
+        <circle cx="100" cy="62" r="34" fill="#ffdbac"/>
+        <!-- Cabello Deportivo Azul -->
+        <path d="M62,58 Q100,15 138,58 Q100,40 62,58 Z" fill="#00d4ff"/>
+        <!-- Visor Deportivo -->
+        <rect x="74" y="52" width="52" height="18" rx="9" fill="#000d20" stroke="#00d4ff" stroke-width="2.5"/>
+        <circle cx="86" cy="61" r="4" fill="#ffffff"/>
+        <circle cx="114" cy="61" r="4" fill="#ffffff"/>
+        <!-- Sonrisa -->
+        <path d="M88,80 Q100,92 112,80" fill="none" stroke="#000000" stroke-width="3" stroke-linecap="round"/>
+        <!-- Balón 3D Dominada Freestyle -->
+        <circle cx="100" cy="172" r="20" fill="url(#ballGrad)" stroke="#001a40" stroke-width="3"/>
+        <polygon points="100,160 108,168 105,180 95,180 92,168" fill="#0044cc"/>
+      </svg>
+    </div>
 
+    <!-- MAPA DE TORNEO INFINITO -->
     <div class="world-map-container" id="nodesContainer"></div>
 
     <button class="btn-menu" id="startBtn">⚽ ¡JUGAR PARTIDO!</button>
@@ -217,7 +265,7 @@
     <div class="hud-pill" style="color:#0088ff;">🔄 <span id="movesText">20</span></div>
   </div>
 
-  <!-- TABLERO -->
+  <!-- TABLERO PRINCIPAL -->
   <div class="board-container" id="gameBoard" style="display: none;">
     <div class="speech-bubble">¡Alinea 3 balones, escudos, guayos o copas para marcar un Golazo!</div>
     <div class="grid-board" id="grid"></div>
@@ -229,7 +277,7 @@
     </div>
   </div>
 
-  <!-- CONFIGURACIÓN -->
+  <!-- MODAL CONFIGURACIÓN -->
   <div class="modal" id="settingsModal" style="display: none;">
     <div class="modal-card">
       <h2 style="color: #003380;">⚙️ CONFIGURACIÓN</h2>
@@ -267,106 +315,7 @@
   </div>
 
   <script>
-    // RENDERIZADO 3D HUMANO CON THREE.JS
-    let scene, camera, renderer, heroGroup, ball3D, legLeft, legRight;
-
-    function init3DHero() {
-      const container = document.getElementById('hero3d-container');
-      if (!container) return;
-      
-      scene = new THREE.Scene();
-      camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-      camera.position.set(0, 1.2, 3.8);
-
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setSize(container.clientWidth, container.clientHeight);
-      renderer.setPixelRatio(window.devicePixelRatio);
-      container.appendChild(renderer.domElement);
-
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-      scene.add(ambientLight);
-
-      const dirLight = new THREE.DirectionalLight(0x00d4ff, 1.2);
-      dirLight.position.set(3, 5, 4);
-      scene.add(dirLight);
-
-      heroGroup = new THREE.Group();
-
-      // Torso / Camiseta Azul y Blanca
-      const shirtGeo = new THREE.CylinderGeometry(0.32, 0.28, 0.65, 16);
-      const shirtMat = new THREE.MeshStandardMaterial({ color: 0x0044cc, roughness: 0.3 });
-      const shirt = new THREE.Mesh(shirtGeo, shirtMat);
-      shirt.position.y = 0.35;
-      heroGroup.add(shirt);
-
-      const stripeGeo = new THREE.BoxGeometry(0.12, 0.66, 0.34);
-      const stripeMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
-      const stripe = new THREE.Mesh(stripeGeo, stripeMat);
-      stripe.position.y = 0.35;
-      heroGroup.add(stripe);
-
-      // Cabeza Humana
-      const headGeo = new THREE.SphereGeometry(0.26, 24, 24);
-      const headMat = new THREE.MeshStandardMaterial({ color: 0xffdbac, roughness: 0.5 });
-      const head = new THREE.Mesh(headGeo, headMat);
-      head.position.y = 0.88;
-      heroGroup.add(head);
-
-      // Cabello Deportivo Azul
-      const hairGeo = new THREE.SphereGeometry(0.27, 16, 16, 0, Math.PI * 2, 0, Math.PI * 0.5);
-      const hairMat = new THREE.MeshStandardMaterial({ color: 0x00d4ff });
-      const hair = new THREE.Mesh(hairGeo, hairMat);
-      hair.position.y = 0.95;
-      heroGroup.add(hair);
-
-      // Extremidades (Piernas)
-      const legGeo = new THREE.CylinderGeometry(0.08, 0.07, 0.5, 12);
-      const legMat = new THREE.MeshStandardMaterial({ color: 0xffdbac });
-
-      legLeft = new THREE.Mesh(legGeo, legMat);
-      legLeft.position.set(-0.15, -0.2, 0);
-      heroGroup.add(legLeft);
-
-      legRight = new THREE.Mesh(legGeo, legMat);
-      legRight.position.set(0.15, -0.2, 0);
-      heroGroup.add(legRight);
-
-      scene.add(heroGroup);
-
-      // Balón de Fútbol 3D
-      const ballGeo = new THREE.SphereGeometry(0.18, 20, 20);
-      const ballMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 });
-      ball3D = new THREE.Mesh(ballGeo, ballMat);
-      ball3D.position.set(0, -0.1, 0.5);
-      scene.add(ball3D);
-
-      animate3D();
-    }
-
-    let clock3D = 0;
-    function animate3D() {
-      requestAnimationFrame(animate3D);
-      clock3D += 0.06;
-
-      if (ball3D) {
-        ball3D.position.y = -0.1 + Math.abs(Math.sin(clock3D * 2.2)) * 0.4;
-        ball3D.rotation.x += 0.05;
-        ball3D.rotation.y += 0.04;
-      }
-
-      if (legRight && legLeft) {
-        legRight.rotation.x = Math.sin(clock3D * 2.2) * 0.3;
-        legLeft.rotation.x = -Math.sin(clock3D * 2.2) * 0.3;
-      }
-
-      if (heroGroup) {
-        heroGroup.position.y = Math.sin(clock3D) * 0.03;
-      }
-
-      renderer.render(scene, camera);
-    }
-
-    // SONIDO Y AUDIO WEB AUDIO API
+    // AUDIO Y MÚSICA SINTETIZADA
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
     let bgOsc = null, bgGain = null;
@@ -375,7 +324,6 @@
     function unlockAudioAndStart() {
       if (!audioCtx) audioCtx = new AudioCtx();
       document.getElementById('audioOverlay').style.display = 'none';
-      init3DHero();
       renderMapNodes();
       toggleBgMusic();
     }
@@ -424,11 +372,15 @@
       if (settings.vib && navigator.vibrate) { navigator.vibrate(60); }
     }
 
-    // FICHAS VECTORIALES HD 3D
+    // FICHAS TEMÁTICAS DE DEPORTE 100% ILUSTRADAS EN 3D
     const ITEMS_3D = [
+      // 0: Balón Pro 3D
       `<svg viewBox="0 0 100 100"><defs><radialGradient id="g0" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#0088ff"/><stop offset="100%" stop-color="#001144"/></radialGradient></defs><circle cx="50" cy="50" r="42" fill="url(#g0)" stroke="#ffffff" stroke-width="3"/><polygon points="50,25 65,35 60,52 40,52 35,35" fill="#ffffff" opacity="0.95"/></svg>`,
+      // 1: Escudo Emblemático
       `<svg viewBox="0 0 100 100"><defs><radialGradient id="g1" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#003380"/></radialGradient></defs><path d="M50 12 L82 25 L82 58 C82 78, 50 90, 50 90 C50 90, 18 78, 18 58 L18 25 Z" fill="url(#g1)" stroke="#ffffff" stroke-width="3"/><circle cx="50" cy="48" r="12" fill="#ffffff"/></svg>`,
+      // 2: Botín / Guayo Deportivo
       `<svg viewBox="0 0 100 100"><defs><radialGradient id="g2" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="60%" stop-color="#e6f2ff"/><stop offset="100%" stop-color="#0055aa"/></radialGradient></defs><rect x="15" y="25" width="70" height="50" rx="18" fill="url(#g2)" stroke="#ffffff" stroke-width="3"/><path d="M25 65 L35 78 M50 65 L60 78 M75 65 L85 78" stroke="#00d4ff" stroke-width="4" stroke-linecap="round"/></svg>`,
+      // 3: Trofeo Dorado 3D
       `<svg viewBox="0 0 100 100"><defs><radialGradient id="g3" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#fffbeb"/><stop offset="50%" stop-color="#facc15"/><stop offset="100%" stop-color="#854d0e"/></radialGradient></defs><path d="M25 20 L75 20 L68 55 C68 68, 32 68, 32 55 Z" fill="url(#g3)" stroke="#ffffff" stroke-width="3"/><rect x="42" y="68" width="16" height="15" fill="#facc15"/><rect x="30" y="83" width="40" height="10" rx="3" fill="#854d0e"/></svg>`
     ];
 
@@ -444,7 +396,7 @@
     let score = 0, goalScore = 300, moves = 20;
     let isProcessing = false;
 
-    // GENERADOR INFINITO DE TORNEO EN MAPA
+    // GENERACIÓN INFINITA DE NIVELES EN MAPA
     function renderMapNodes() {
       const container = document.getElementById('nodesContainer');
       if (!container) return;

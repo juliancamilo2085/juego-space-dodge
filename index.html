@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Blue Strike: Match 3D Saga</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Blue Strike: Football Match 3D Saga v30</title>
   <link rel="manifest" href="manifest.json">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
   <style>
@@ -15,15 +18,15 @@
       height: 100vh; overflow: hidden; color: #fff;
     }
 
-    /* PANTALLA PRINCIPAL CON FONDO DE ESTADIO ILUMINADO */
+    /* PANTALLA PRINCIPAL - ESTADIO NOCTURNO CONTINUO */
     .screen {
       position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: radial-gradient(circle at 50% 20%, #0044aa 0%, #001a40 60%, #000814 100%);
+      background: radial-gradient(circle at 50% 20%, #0044cc 0%, #001a40 60%, #000612 100%);
       display: flex; flex-direction: column; align-items: center; justify-content: space-between;
       padding: 20px 15px; z-index: 30; box-sizing: border-box;
     }
 
-    /* OVERLAY INICIAL PARA UNLOCK DE AUDIO */
+    /* OVERLAY INICIAL PARA ACTIVAR AUDIO */
     .audio-unlock-overlay {
       position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
       background: radial-gradient(circle at center, #003380 0%, #000814 100%);
@@ -31,7 +34,7 @@
       justify-content: center; align-items: center; text-align: center; padding: 25px;
     }
 
-    /* BARRA SUPERIOR */
+    /* NAV SUPERIOR */
     .top-navbar {
       width: 100%; max-width: 420px; display: flex;
       justify-content: space-between; align-items: center; z-index: 35;
@@ -49,29 +52,22 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
 
-    /* LOGO DEL JUEGO */
+    /* LOGO Y MARCA */
     .game-logo { font-size: 32px; text-align: center; line-height: 0.95; margin-top: 5px; }
     .logo-top { color: #ffffff; text-shadow: 0 5px 0 #002255, 0 10px 25px rgba(0, 136, 255, 0.8); display: block; letter-spacing: 2px; }
     .logo-bottom { color: #00d4ff; text-shadow: 0 5px 0 #004488, 0 10px 25px rgba(0, 212, 255, 0.8); display: block; font-size: 26px; letter-spacing: 3px; }
 
-    /* CONTENEDOR DEL JUGADOR JOVEN 3D HD (ANIMACIÓN FREESTYLE SIN CAJA NEGRA) */
+    /* CONTENEDOR AVATAR 3D CANVAS (JUGADOR REAL EN DOMINADAS) */
     .hero-avatar-box {
-      width: 180px; height: 180px; margin: 5px 0;
+      width: 220px; height: 200px; margin: 5px 0;
       position: relative; display: flex; justify-content: center; align-items: center;
-      filter: drop-shadow(0 10px 20px rgba(0, 212, 255, 0.6));
+      filter: drop-shadow(0 10px 25px rgba(0, 212, 255, 0.6));
     }
-
-    .hero-avatar-box svg {
+    canvas#heroCanvas {
       width: 100%; height: 100%;
-      animation: freestyleAnim 1.8s infinite ease-in-out;
     }
 
-    @keyframes freestyleAnim {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-12px) rotate(2deg); }
-    }
-
-    /* MAPA DE TORNEO DE NIVELES INFINITOS */
+    /* MAPA DE TORNEO INFINITO */
     .world-map-container {
       flex: 1; width: 100%; max-width: 380px; margin: 10px 0;
       overflow-y: auto; display: flex; flex-direction: column-reverse;
@@ -95,7 +91,7 @@
       100% { box-shadow: 0 0 30px #00d4ff, 0 6px 0 #003399; }
     }
 
-    /* BOTONES INTERACTIVOS */
+    /* BOTONES */
     .btn-menu {
       width: 100%; max-width: 320px; padding: 16px; border-radius: 24px; border: 2px solid #ffffff;
       font-family: 'Fredoka One', cursive; font-size: 20px; color: #fff;
@@ -121,7 +117,7 @@
       border: 2px solid #00d4ff; max-width: 90%;
     }
 
-    /* TABLERO DE CANCHA EN 3D CON CÉSPED SINTÉTICO */
+    /* TABLERO DE CANCHA DE CÉSPED */
     .board-container {
       flex: 1; display: flex; flex-direction: column;
       justify-content: center; align-items: center; width: 100%;
@@ -142,7 +138,6 @@
     .cell.exploding { transform: scale(0); opacity: 0; transition: transform 0.25s, opacity 0.25s; }
     .cell svg { width: 38px; height: 38px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
 
-    /* POTENCIADORES BARRAS INFERIORES */
     .boosters-bar { display: flex; gap: 15px; margin: 10px 0 15px; }
     .booster-btn {
       background: #003380; border: 2px solid #00d4ff; border-radius: 18px;
@@ -152,7 +147,6 @@
     }
     .booster-btn:active { transform: translateY(3px); }
 
-    /* TEXTO ANIMADO CELEBRACIÓN GOL */
     .goal-popup {
       position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) scale(0);
       font-size: 48px; font-family: 'Fredoka One'; color: #00f0ff;
@@ -161,7 +155,6 @@
     }
     .goal-popup.active { transform: translate(-50%, -50%) scale(1.3); }
 
-    /* MODALES DE RESULTADO Y CONFIGURACIÓN */
     .modal {
       position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(0, 13, 32, 0.92); backdrop-filter: blur(10px);
@@ -194,7 +187,7 @@
 </head>
 <body>
 
-  <!-- PANTALLA UNLOCK AUDIO -->
+  <!-- UNLOCK AUDIO -->
   <div class="audio-unlock-overlay" id="audioOverlay">
     <div class="game-logo" style="margin-bottom:25px;">
       <span class="logo-top">BLUE STRIKE</span>
@@ -205,7 +198,7 @@
 
   <div class="goal-popup" id="goalPopup">¡GOOOOL!</div>
 
-  <!-- PORTADA PRINCIPAL CON JUGADOR HD Y MAPA -->
+  <!-- PORTADA CON JUGADOR EN FREESTYLE Y MAPA DE TORNEO -->
   <div class="screen" id="mapScreen">
     <div class="top-navbar">
       <div class="hud-pill">❤️ <span id="livesCount">5</span></div>
@@ -218,38 +211,9 @@
       <span class="logo-bottom">MATCH 3D SAGA ⚽</span>
     </div>
 
-    <!-- AVATAR ILUSTRADO HD DEL FUTBOLISTA JOVEN EN FREESTYLE -->
+    <!-- CANVAS DEL FUTBOLISTA HUMANO 3D EN DOMINADAS -->
     <div class="hero-avatar-box">
-      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <radialGradient id="shirtGrad" cx="30%" cy="30%" r="70%">
-            <stop offset="0%" stop-color="#00d4ff"/>
-            <stop offset="50%" stop-color="#0044cc"/>
-            <stop offset="100%" stop-color="#001144"/>
-          </radialGradient>
-          <radialGradient id="ballGrad" cx="30%" cy="30%" r="70%">
-            <stop offset="0%" stop-color="#ffffff"/>
-            <stop offset="70%" stop-color="#cbd5e1"/>
-            <stop offset="100%" stop-color="#64748b"/>
-          </radialGradient>
-        </defs>
-        <!-- Cuerpo y Uniforme Azul y Blanco -->
-        <path d="M55,95 L145,95 L135,160 L65,160 Z" fill="url(#shirtGrad)" stroke="#ffffff" stroke-width="3.5"/>
-        <rect x="88" y="95" width="24" height="65" fill="#ffffff"/>
-        <!-- Cabeza y Rostro Joven -->
-        <circle cx="100" cy="62" r="34" fill="#ffdbac"/>
-        <!-- Cabello Deportivo Azul -->
-        <path d="M62,58 Q100,15 138,58 Q100,40 62,58 Z" fill="#00d4ff"/>
-        <!-- Visor Deportivo -->
-        <rect x="74" y="52" width="52" height="18" rx="9" fill="#000d20" stroke="#00d4ff" stroke-width="2.5"/>
-        <circle cx="86" cy="61" r="4" fill="#ffffff"/>
-        <circle cx="114" cy="61" r="4" fill="#ffffff"/>
-        <!-- Sonrisa -->
-        <path d="M88,80 Q100,92 112,80" fill="none" stroke="#000000" stroke-width="3" stroke-linecap="round"/>
-        <!-- Balón 3D Dominada Freestyle -->
-        <circle cx="100" cy="172" r="20" fill="url(#ballGrad)" stroke="#001a40" stroke-width="3"/>
-        <polygon points="100,160 108,168 105,180 95,180 92,168" fill="#0044cc"/>
-      </svg>
+      <canvas id="heroCanvas" width="220" height="200"></canvas>
     </div>
 
     <!-- MAPA DE TORNEO INFINITO -->
@@ -277,7 +241,7 @@
     </div>
   </div>
 
-  <!-- MODAL CONFIGURACIÓN -->
+  <!-- CONFIGURACIÓN -->
   <div class="modal" id="settingsModal" style="display: none;">
     <div class="modal-card">
       <h2 style="color: #003380;">⚙️ CONFIGURACIÓN</h2>
@@ -315,7 +279,123 @@
   </div>
 
   <script>
-    // AUDIO Y MÚSICA SINTETIZADA
+    // DESTRUCCIÓN DE CACHÉ ANTERIOR
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+
+    // MOTOR RENDER CANVAS DEL JUGADOR JOVEN (DOMINADAS / FREESTYLE)
+    const heroCanvas = document.getElementById('heroCanvas');
+    const hCtx = heroCanvas.getContext('2d');
+    let animFrame = 0;
+
+    function renderHero() {
+      hCtx.clearRect(0, 0, heroCanvas.width, heroCanvas.height);
+      animFrame += 0.08;
+
+      const centerX = 110;
+      const bodyY = 85 + Math.sin(animFrame) * 4;
+      const ballY = 165 - Math.abs(Math.sin(animFrame * 2)) * 35;
+      const legAngle = Math.sin(animFrame * 2) * 0.3;
+
+      // Sombra del Balón
+      hCtx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+      hCtx.beginPath();
+      hCtx.ellipse(centerX, 175, 18, 6, 0, 0, Math.PI * 2);
+      hCtx.fill();
+
+      // Pierna Izquierda
+      hCtx.strokeStyle = '#ffdbac';
+      hCtx.lineWidth = 12;
+      hCtx.lineCap = 'round';
+      hCtx.beginPath();
+      hCtx.moveTo(centerX - 15, bodyY + 35);
+      hCtx.lineTo(centerX - 18, bodyY + 68);
+      hCtx.stroke();
+
+      // Pierna Derecha (Pateando en Dominada)
+      hCtx.beginPath();
+      hCtx.moveTo(centerX + 15, bodyY + 35);
+      hCtx.lineTo(centerX + 20 + Math.sin(legAngle) * 20, bodyY + 60 - Math.cos(legAngle) * 10);
+      hCtx.stroke();
+
+      // Guayos Azules
+      hCtx.fillStyle = '#0088ff';
+      hCtx.beginPath();
+      hCtx.arc(centerX - 20, bodyY + 70, 7, 0, Math.PI * 2);
+      hCtx.arc(centerX + 22 + Math.sin(legAngle) * 20, bodyY + 62 - Math.cos(legAngle) * 10, 7, 0, Math.PI * 2);
+      hCtx.fill();
+
+      // Camiseta Azul Real y Blanca
+      const gradShirt = hCtx.createLinearGradient(centerX - 30, bodyY, centerX + 30, bodyY + 40);
+      gradShirt.addColorStop(0, '#0055cc');
+      gradShirt.addColorStop(1, '#001a66');
+      hCtx.fillStyle = gradShirt;
+      hCtx.beginPath();
+      hCtx.roundRect(centerX - 28, bodyY, 56, 42, 10);
+      hCtx.fill();
+
+      // Franja Blanca Central
+      hCtx.fillStyle = '#ffffff';
+      hCtx.fillRect(centerX - 8, bodyY, 16, 42);
+
+      // Cabeza / Rostro Joven
+      hCtx.fillStyle = '#ffdbac';
+      hCtx.beginPath();
+      hCtx.arc(centerX, bodyY - 18, 22, 0, Math.PI * 2);
+      hCtx.fill();
+
+      // Cabello Deportivo Azul Cyan
+      hCtx.fillStyle = '#00d4ff';
+      hCtx.beginPath();
+      hCtx.arc(centerX, bodyY - 24, 23, Math.PI, Math.PI * 2);
+      hCtx.fill();
+
+      // Gafas/Visor Cyber
+      hCtx.fillStyle = '#000814';
+      hCtx.beginPath();
+      hCtx.roundRect(centerX - 16, bodyY - 22, 32, 12, 6);
+      hCtx.fill();
+      hCtx.fillStyle = '#00d4ff';
+      hCtx.beginPath();
+      hCtx.arc(centerX - 7, bodyY - 16, 3, 0, Math.PI * 2);
+      hCtx.arc(centerX + 7, bodyY - 16, 3, 0, Math.PI * 2);
+      hCtx.fill();
+
+      // Sonrisa
+      hCtx.strokeStyle = '#000000';
+      hCtx.lineWidth = 2.5;
+      hCtx.beginPath();
+      hCtx.arc(centerX, bodyY - 10, 8, 0.2, Math.PI - 0.2);
+      hCtx.stroke();
+
+      // Balón 3D Pro en Movimiento
+      const ballGrad = hCtx.createRadialGradient(centerX - 5, ballY - 5, 2, centerX, ballY, 18);
+      ballGrad.addColorStop(0, '#ffffff');
+      ballGrad.addColorStop(0.7, '#cbd5e1');
+      ballGrad.addColorStop(1, '#003380');
+      hCtx.fillStyle = ballGrad;
+      hCtx.beginPath();
+      hCtx.arc(centerX, ballY, 18, 0, Math.PI * 2);
+      hCtx.fill();
+      hCtx.strokeStyle = '#001a40';
+      hCtx.lineWidth = 2;
+      hCtx.stroke();
+
+      // Detalle Hexagonal Balón
+      hCtx.fillStyle = '#0044cc';
+      hCtx.beginPath();
+      hCtx.arc(centerX, ballY, 6, 0, Math.PI * 2);
+      hCtx.fill();
+
+      requestAnimationFrame(renderHero);
+    }
+
+    // AUDIO WEB AUDIO API
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
     let bgOsc = null, bgGain = null;
@@ -324,6 +404,7 @@
     function unlockAudioAndStart() {
       if (!audioCtx) audioCtx = new AudioCtx();
       document.getElementById('audioOverlay').style.display = 'none';
+      renderHero();
       renderMapNodes();
       toggleBgMusic();
     }
@@ -372,7 +453,7 @@
       if (settings.vib && navigator.vibrate) { navigator.vibrate(60); }
     }
 
-    // FICHAS TEMÁTICAS DE DEPORTE 100% ILUSTRADAS EN 3D
+    // FICHAS VECTORIALES HD 3D
     const ITEMS_3D = [
       // 0: Balón Pro 3D
       `<svg viewBox="0 0 100 100"><defs><radialGradient id="g0" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#0088ff"/><stop offset="100%" stop-color="#001144"/></radialGradient></defs><circle cx="50" cy="50" r="42" fill="url(#g0)" stroke="#ffffff" stroke-width="3"/><polygon points="50,25 65,35 60,52 40,52 35,35" fill="#ffffff" opacity="0.95"/></svg>`,
@@ -633,10 +714,6 @@
       }
 
       renderMapNodes();
-    }
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
     }
   </script>
 </body>
